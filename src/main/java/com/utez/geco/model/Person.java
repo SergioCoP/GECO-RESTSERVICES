@@ -14,13 +14,13 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPerson;
 
-    @Column(name = "name",nullable = false,length = 45)
+    @Column(name = "name",nullable = false,length = 60)
     private String name;
-    @Column(name = "surname",nullable = false,length = 45)
+    @Column(name = "surname",nullable = false,length = 60)
     private String surname;
-    @Column(name = "lastname",nullable = false,length = 45)
+    @Column(name = "lastname",nullable = true,length = 60)
     private String lastname;
-    @Column(name = "age",nullable = false)
+    @Column(name = "age",nullable = true)
     private int age;
 
     @OneToOne(mappedBy = "idPerson")

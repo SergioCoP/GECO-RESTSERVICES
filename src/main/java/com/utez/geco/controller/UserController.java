@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
+@CrossOrigin(origins = "*")
 public class UserController {
     @Autowired
     private UserServiceImpl userService;
@@ -26,11 +27,12 @@ public class UserController {
         return userService.findByEmail(email);
     }
 
-    @GetMapping("/findByEmailAndPassword")
+    @GetMapping("/login")
     @ResponseBody
-    public User findByEmailAndPassword(@RequestParam(name = "email")String email,@RequestParam(name = "password") String password){
+    public boolean findByEmailAndPassword(@RequestParam(name = "email")String email,@RequestParam(name = "password") String password){
         System.out.println(userService.findByEmailAndPassword(email,password));
-        return userService.findByEmailAndPassword(email,password);
+        User nUser = userService.findByEmailAndPassword(email,password);
+        return nUser != null;
     }
 
     @GetMapping("/getUsers")
