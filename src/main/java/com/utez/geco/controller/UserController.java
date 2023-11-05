@@ -17,8 +17,9 @@ public class UserController {
 
     @PostMapping("/registerUser")
     @ResponseBody
-    public User registerUser(@RequestBody User newUser){
-        return userService.register(newUser);
+    public String registerUser(@RequestBody User newUser){
+        User nUser = userService.register(newUser);
+        return nUser != null ? "register" : "error";
     }
 
     @GetMapping("/getUserByEmail")
@@ -30,7 +31,6 @@ public class UserController {
     @GetMapping("/login")
     @ResponseBody
     public boolean findByEmailAndPassword(@RequestParam(name = "email")String email,@RequestParam(name = "password") String password){
-        System.out.println(userService.findByEmailAndPassword(email,password));
         User nUser = userService.findByEmailAndPassword(email,password);
         return nUser != null;
     }

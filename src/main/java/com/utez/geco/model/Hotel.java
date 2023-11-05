@@ -12,17 +12,17 @@ public class Hotel {
     private Long idHotel;
     @Column(nullable = false,length = 50)
     private String name;
-    @Column(nullable = false,length = 190)
+    @Column(length = 190)
     private String description;
-    @Column(nullable = false,length = 200)
+    @Column(length = 200)
     private String address;
-    @Column(nullable = false,length = 12)
+    @Column(length = 12)
     private String phone;
-    @Column(nullable = false,length = 15)
+    @Column(length = 15)
     private String rfc;
-    @Column(nullable = false,length = 255)
+    @Column(length = 255)
     private String mission;
-    @Column(nullable = false,length = 255)
+    @Column(length = 255)
     private String vission;
 
     public Hotel() {
