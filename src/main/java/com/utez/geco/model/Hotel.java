@@ -1,5 +1,6 @@
 package com.utez.geco.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,20 +11,22 @@ public class Hotel {
     @Column(name = "idHotel",nullable = false,unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idHotel;
-    @Column(nullable = false,length = 50)
+
+    @Column(length = 50)
     private String name;
-    @Column(nullable = false,length = 190)
-    private String description;
-    @Column(nullable = false,length = 200)
-    private String address;
-    @Column(nullable = false,length = 12)
-    private String phone;
-    @Column(nullable = false,length = 15)
-    private String rfc;
-    @Column(nullable = false,length = 255)
-    private String mission;
-    @Column(nullable = false,length = 255)
-    private String vission;
+    @Column(length = 20)
+    private String colorFont;
+    @Column(length = 20)
+    private String colorPrimary;
+    @Column(length = 20)
+    private String colorSecondary;
+    @Column(length = 20)
+    private String colorTertiary;
+
+    //idUser
+    @OneToOne(mappedBy = "idHotel")
+    @JsonBackReference
+    private User idUser;
 
     public Hotel() {
     }
@@ -44,51 +47,43 @@ public class Hotel {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public String getColorFont() {
+        return colorFont;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setColorFont(String colorFont) {
+        this.colorFont = colorFont;
     }
 
-    public String getAddress() {
-        return address;
+    public String getColorPrimary() {
+        return colorPrimary;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setColorPrimary(String colorPrimary) {
+        this.colorPrimary = colorPrimary;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getColorSecondary() {
+        return colorSecondary;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setColorSecondary(String colorSecondary) {
+        this.colorSecondary = colorSecondary;
     }
 
-    public String getRfc() {
-        return rfc;
+    public String getColorTertiary() {
+        return colorTertiary;
     }
 
-    public void setRfc(String rfc) {
-        this.rfc = rfc;
+    public void setColorTertiary(String colorTertiary) {
+        this.colorTertiary = colorTertiary;
     }
 
-    public String getMission() {
-        return mission;
+    public User getIdUser() {
+        return idUser;
     }
 
-    public void setMission(String mission) {
-        this.mission = mission;
-    }
-
-    public String getVission() {
-        return vission;
-    }
-
-    public void setVission(String vission) {
-        this.vission = vission;
+    public void setIdUser(User idUser) {
+        this.idUser = idUser;
     }
 }

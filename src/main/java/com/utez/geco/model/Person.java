@@ -20,8 +20,6 @@ public class Person {
     private String surname;
     @Column(name = "lastname",nullable = true,length = 60)
     private String lastname;
-    @Column(name = "age",nullable = true)
-    private int age;
 
     @OneToOne(mappedBy = "idPerson")
     @JsonBackReference
@@ -63,14 +61,6 @@ public class Person {
         this.lastname = lastname;
     }
 
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
     public User getIdUser() {
         return idUser;
     }
@@ -78,5 +68,7 @@ public class Person {
     public void setIdUser(User idUser) {
         this.idUser = idUser;
     }
+
+
 
 }
