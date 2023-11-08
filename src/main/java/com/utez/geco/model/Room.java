@@ -1,30 +1,40 @@
 package com.utez.geco.model;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "room")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "idRoom"
+)
 public class Room {
     @Id
     @Column(name = "idRoom",nullable = false,unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRoom;
-    @Column(length = 20)
+
+    @Column(name = "identifier",length = 20)
     private String identifier;
-    @Column(columnDefinition = "int default 1")
+
+    @Column(name = "status",columnDefinition = "int default 1")
     private int status;
     //rrrom-user
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="idUser")
+    @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
     private User idUser;
    //room-rubro
     @OneToMany(mappedBy = "idRoom")
-    private Set<Rubro> rubros;
+    private List<Rubro> rubros = new ArrayList<>();
 
     @OneToMany(mappedBy = "idRoom")
-    private Set<Incidence> incidences;
+    private List<Incidence> incidences = new ArrayList<>();
 
 
     public Long getIdRoom() {
@@ -59,19 +69,19 @@ public class Room {
         this.idUser = idUser;
     }
 
-    public Set<Rubro> getRubros() {
+    public List<Rubro> getRubros() {
         return rubros;
     }
 
-    public void setRubros(Set<Rubro> rubros) {
+    public void setRubros(List<Rubro> rubros) {
         this.rubros = rubros;
     }
 
-    public Set<Incidence> getIncidences() {
+    public List<Incidence> getIncidences() {
         return incidences;
     }
 
-    public void setIncidences(Set<Incidence> incidences) {
+    public void setIncidences(List<Incidence> incidences) {
         this.incidences = incidences;
     }
 }

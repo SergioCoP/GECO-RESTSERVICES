@@ -1,16 +1,22 @@
 package com.utez.geco.model;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "rol")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "idRol"
+)
 public class Role {
     @Id
     @Column(name = "idRol",nullable = false,unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRol;
-
+    @Column(name = "name")
     private String name;
+    @Column(name = "description")
     private String description;
 
     //many to many xd

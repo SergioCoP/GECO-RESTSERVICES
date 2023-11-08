@@ -1,10 +1,14 @@
 package com.utez.geco.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "hotel")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "idHotel"
+)
 public class Hotel {
 
     @Id
@@ -12,20 +16,19 @@ public class Hotel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idHotel;
 
-    @Column(length = 50)
+    @Column(name = "name",length = 50)
     private String name;
-    @Column(length = 20)
+    @Column(name = "colorFont",length = 20)
     private String colorFont;
-    @Column(length = 20)
+    @Column(name = "colorPrimary",length = 20)
     private String colorPrimary;
-    @Column(length = 20)
+    @Column(name = "colorSecondary",length = 20)
     private String colorSecondary;
-    @Column(length = 20)
+    @Column(name = "colorTertiary",length = 20)
     private String colorTertiary;
 
     //idUser
     @OneToOne(mappedBy = "idHotel")
-    @JsonBackReference
     private User idUser;
 
     public Hotel() {

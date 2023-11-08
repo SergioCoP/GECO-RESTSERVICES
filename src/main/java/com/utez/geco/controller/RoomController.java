@@ -2,8 +2,10 @@ package com.utez.geco.controller;
 
 
 import com.utez.geco.model.Room;
+import com.utez.geco.model.User;
 import com.utez.geco.service.RoomServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,7 +38,7 @@ public class RoomController {
         return msg;
     }
 
-    @PutMapping("/upateRoom")
+    @PutMapping("/updateRoom")
     @ResponseBody
     public String updateRoom(@RequestBody Room uRoom){
         Room uRom = roomService.update(uRoom);
@@ -54,5 +56,11 @@ public class RoomController {
         }else{
             return "NotFound";
         }
+    }
+
+    @PostMapping("/assignUserRoom")
+    @ResponseBody
+    public String assignUserToRoom(@Param("idUser") Long idUser,@Param("idRoom") Long idRoom){
+        return roomService.assignUserToRoom(idUser,idRoom);
     }
 }

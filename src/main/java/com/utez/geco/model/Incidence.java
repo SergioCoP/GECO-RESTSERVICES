@@ -1,21 +1,28 @@
 package com.utez.geco.model;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
 import java.util.Date;
 
 @Entity
 @Table(name = "incidence")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "idIncidence"
+)
 public class Incidence {
     @Id
-    @Column(nullable = false,unique = true)
+    @Column(name = "idInicidence",nullable = false,unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idIncidence;
-
+    @Column(name = "createdAt")
     private Date createdAt;
-
+    @Column(name = "description")
     private String description;
+    @Column(name = "image")
     private String image;
+    @Column(name = "status")
     private int status;
 
     //iduser
