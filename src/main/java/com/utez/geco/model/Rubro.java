@@ -1,16 +1,23 @@
 package com.utez.geco.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "rubro")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "idRubro"
+)
 public class Rubro {
     @Id
-    @Column(nullable = false,unique = true)
+    @Column(name = "idRubro",nullable = false,unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRubro;
 
-    @Column(length = 200)
+    @Column(name = "description",length = 200)
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)

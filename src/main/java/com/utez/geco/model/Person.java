@@ -1,13 +1,15 @@
 package com.utez.geco.model;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "person")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "idPerson"
+)
 public class Person {
     @Id
     @Column(name = "idPerson",nullable = false,unique = true)
@@ -22,7 +24,6 @@ public class Person {
     private String lastname;
 
     @OneToOne(mappedBy = "idPerson")
-    @JsonBackReference
     private User idUser;
 
 
@@ -68,7 +69,6 @@ public class Person {
     public void setIdUser(User idUser) {
         this.idUser = idUser;
     }
-
 
 
 }

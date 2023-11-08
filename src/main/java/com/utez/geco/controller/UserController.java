@@ -13,6 +13,7 @@ import java.util.List;
 @RequestMapping("/user")
 @CrossOrigin(origins = "*")
 public class UserController {
+    String msg = "";
     @Autowired
     private UserServiceImpl userService;
 
@@ -20,6 +21,7 @@ public class UserController {
     @ResponseBody
     public String registerUser(@RequestBody User newUser){
         User nUser = userService.register(newUser);
+        System.out.println(userService.register(newUser));
         String msg = "error";
         if(nUser != null){
             msg = "register";
@@ -36,7 +38,6 @@ public class UserController {
     @GetMapping("/login")
     @ResponseBody
     public boolean findByEmailAndPassword(@RequestParam(name = "email")String email,@RequestParam(name = "password") String password){
-        System.out.println(userService.findByEmailAndPassword(email,password));
         User nUser = userService.findByEmailAndPassword(email,password);
         return nUser != null;
     }
@@ -47,13 +48,5 @@ public class UserController {
         return userService.findAll();
     }
 
-    @PostMapping("/assignUserRoom")
-    @ResponseBody
-    public String assignUserToRoom(@RequestBody User nUser){
-        User vUser = userService.findByEmail(nUser.getEmail());
-        if(vUser != null){
 
-        }
-        return "";
-    }
 }

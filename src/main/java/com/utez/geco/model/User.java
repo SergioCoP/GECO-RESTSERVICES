@@ -1,14 +1,18 @@
 package com.utez.geco.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "user")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "idUser"
+)
 public class User {
     @Id
     @Column(name = "idUser",nullable = false,unique = true)
@@ -28,22 +32,21 @@ public class User {
 //   inverseJoinColumns = {@JoinColumn(name = "person_id",referencedColumnName = "idPerson")})
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="idPerson")
-    @JsonManagedReference
     private Person idPerson;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="idHotel")
-    @JsonManagedReference
     private Hotel idHotel;
 
     @OneToMany(mappedBy = "idUser")
-    private Set<Role> roles;
+    private List<Role> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "idUser")
-    private Set<Room> rooms;
+    private List<Room> rooms = new ArrayList<>();
 
-    @OneToMany(mappedBy = "idUser")
-    private Set<Incidence> incidences;
+    @OneToMany(mappedBy = "idUser" )
+    private List<Incidence> incidences = new ArrayList<>();
+
     public User() {
     }
 
@@ -95,27 +98,29 @@ public class User {
         this.idHotel = idHotel;
     }
 
-    public Set<Role> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 
-    public Set<Room> getRooms() {
+    public List<Room> getRooms() {
         return rooms;
     }
 
-    public void setRooms(Set<Room> rooms) {
+    public void setRooms(List<Room> rooms) {
         this.rooms = rooms;
     }
 
-    public Set<Incidence> getIncidences() {
+    public List<Incidence> getIncidences() {
         return incidences;
     }
 
-    public void setIncidences(Set<Incidence> incidences) {
+    public void setIncidences(List<Incidence> incidences) {
         this.incidences = incidences;
     }
+
+
 }
