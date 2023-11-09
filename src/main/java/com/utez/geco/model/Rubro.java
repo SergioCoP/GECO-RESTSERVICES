@@ -20,8 +20,13 @@ public class Rubro {
     @Column(name = "description",length = 200)
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="idRoom",nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name="idRoom",nullable = true)
+    @JoinTable(
+            name = "room_rubro",
+            joinColumns = @JoinColumn(name = "idRubro"),
+            inverseJoinColumns = @JoinColumn(name = "idRoom")
+    )
     private Room idRoom;
 
     public Rubro() {

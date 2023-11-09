@@ -1,4 +1,4 @@
-package com.utez.geco.service;
+package com.utez.geco.service.User;
 
 import com.utez.geco.model.User;
 

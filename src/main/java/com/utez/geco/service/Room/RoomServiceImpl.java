@@ -1,7 +1,8 @@
-package com.utez.geco.service;
+package com.utez.geco.service.Room;
 
+import com.google.gson.Gson;
 import com.utez.geco.model.Room;
-import com.utez.geco.repository.RoomRepository;
+import com.utez.geco.repository.Room.RoomRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,16 +25,31 @@ public class RoomServiceImpl extends Room {
     }
 
     public String assignUserToRoom(Long idUser,Long idRoom){
+
         Room sRom = roomRepository.findByIdRoom(idRoom);
         if(sRom != null){
-           if(roomRepository.assignRoomToUser(idUser, idRoom) == 1){
-               msg = "Assigned";
-           }else{
-               msg = "NotAssigned";
-           }
+            if(new Gson().toJson(roomRepository.validateRomUser(idUser,idRoom)).equals("null")){
+                if(roomRepository.assignRoomToUser(idUser, idRoom) >= 1){
+                    msg = "Assigned";
+                }else{
+                    msg = "NotAssigned";
+                }
+            }else{
+                msg = "RoomWasAsigned";
+            }
         }else{
             msg = "RoomNotFound";
         }
+        return msg;
+    }
+
+    public String reviewRoom(int status,Long idRoom){
+
+       if(roomRepository.reviewRooom(status,idRoom) >= 1){
+           msg = "Done";
+       }else{
+           msg = "NotReview";
+       }
         return msg;
     }
 

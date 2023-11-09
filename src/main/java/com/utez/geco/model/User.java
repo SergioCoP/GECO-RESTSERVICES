@@ -38,13 +38,19 @@ public class User {
     @JoinColumn(name="idHotel")
     private Hotel idHotel;
 
-    @OneToMany(mappedBy = "idUser")
-    private List<Role> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "idUser")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinTable(
+            name="user_rol",
+            joinColumns = @JoinColumn(name="idUser"),
+            inverseJoinColumns = @JoinColumn(name = "idRol")
+    )
+    private Role idRol;
+
+    @OneToMany(mappedBy = "idUser",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Room> rooms = new ArrayList<>();
 
-    @OneToMany(mappedBy = "idUser" )
+    @OneToMany(mappedBy = "idUser",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Incidence> incidences = new ArrayList<>();
 
     public User() {
@@ -98,12 +104,12 @@ public class User {
         this.idHotel = idHotel;
     }
 
-    public List<Role> getRoles() {
-        return roles;
+    public Role getIdRol() {
+        return idRol;
     }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
+    public void setIdRol(Role idRol) {
+        this.idRol = idRol;
     }
 
     public List<Room> getRooms() {
