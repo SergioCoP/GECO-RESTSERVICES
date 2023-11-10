@@ -3,6 +3,9 @@ package com.utez.geco.model;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "rol")
 @JsonIdentityInfo(
@@ -20,9 +23,8 @@ public class Role {
     private String description;
 
     //many to many xd
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="idUser",nullable = false)
-    private User idUser;
+    @OneToMany(mappedBy = "idRol",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<User> users = new ArrayList<>();
 
     public Role() {
     }
@@ -51,11 +53,11 @@ public class Role {
         this.description = description;
     }
 
-    public User getIdUser() {
-        return idUser;
+    public List<User> getUsers() {
+        return users;
     }
 
-    public void setIdUser(User idUser) {
-        this.idUser = idUser;
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 }

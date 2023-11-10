@@ -1,4 +1,4 @@
-package com.utez.geco.service;
+package com.utez.geco.service.Room;
 
 import com.utez.geco.model.Room;
 

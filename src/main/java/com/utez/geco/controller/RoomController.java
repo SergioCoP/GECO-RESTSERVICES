@@ -2,8 +2,7 @@ package com.utez.geco.controller;
 
 
 import com.utez.geco.model.Room;
-import com.utez.geco.model.User;
-import com.utez.geco.service.RoomServiceImpl;
+import com.utez.geco.service.Room.RoomServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
@@ -24,15 +23,15 @@ public class RoomController {
     return roomService.findAll();
     }
 
-    @GetMapping("/getRoom/{id}")
+    @GetMapping("/getRoom")
     @ResponseBody
-    public Room getRoomById(@PathVariable("id") Long id){
+    public Room getRoomById(@RequestParam("idRoom") Long id){
         return roomService.findById(id);
     }
 
     @PostMapping("/saveRoom")
     @ResponseBody
-    public String createRooom(@RequestBody Room nrom){
+    public String createRoom(@RequestBody Room nrom){
         Room nRom = roomService.register(nrom);
         msg = nRom != null ?  "Register" : "NotRegistered";
         return msg;
@@ -46,9 +45,9 @@ public class RoomController {
         return msg;
     }
 
-    @DeleteMapping("/deleteRoom/{id}")
+    @DeleteMapping("/deleteRoom")
     @ResponseBody
-    public String deleteRoom(@PathVariable("id") Long id){
+    public String deleteRoom(@RequestParam("idRoom") Long id){
         Room rom = roomService.findById(id);
         if(rom != null){
             roomService.delete(id);
@@ -60,7 +59,13 @@ public class RoomController {
 
     @PostMapping("/assignUserRoom")
     @ResponseBody
-    public String assignUserToRoom(@Param("idUser") Long idUser,@Param("idRoom") Long idRoom){
+    public String assignUserToRoom(@RequestParam("idUser") Long idUser,@RequestParam("idRoom") Long idRoom){
         return roomService.assignUserToRoom(idUser,idRoom);
+    }
+
+    @PutMapping("/reviewRoom")
+    @ResponseBody
+    public String reviewRoom(@RequestParam("status") int status,@RequestParam("idRoom") Long idRoom){
+        return roomService.reviewRoom(status,idRoom);
     }
 }

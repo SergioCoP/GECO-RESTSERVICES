@@ -26,14 +26,18 @@ public class Room {
     private int status;
     //rrrom-user
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="idUser")
+    @JoinTable(
+            name = "room_user",
+            joinColumns = @JoinColumn(name ="idRoom"),
+            inverseJoinColumns = @JoinColumn(name = "idUser")
+    )
     @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
     private User idUser;
    //room-rubro
-    @OneToMany(mappedBy = "idRoom")
+    @OneToMany(mappedBy = "idRoom",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Rubro> rubros = new ArrayList<>();
 
-    @OneToMany(mappedBy = "idRoom")
+    @OneToMany(mappedBy = "idRoom",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Incidence> incidences = new ArrayList<>();
 
 
