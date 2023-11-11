@@ -3,11 +3,15 @@ package com.utez.geco.model;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "hotel")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "idHotel"
+        property = "idHotel",
+        scope = Hotel.class
 )
 public class Hotel {
 
@@ -28,8 +32,9 @@ public class Hotel {
     private String colorTertiary;
 
     //idUser
-    @OneToOne(mappedBy = "idHotel")
-    private User idUser;
+
+    @OneToMany(mappedBy = "idHotel",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<User> users = new ArrayList<>();
 
     public Hotel() {
     }
@@ -82,11 +87,11 @@ public class Hotel {
         this.colorTertiary = colorTertiary;
     }
 
-    public User getIdUser() {
-        return idUser;
+    public List<User> getUsers() {
+        return users;
     }
 
-    public void setIdUser(User idUser) {
-        this.idUser = idUser;
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 }

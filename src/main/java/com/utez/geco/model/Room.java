@@ -11,7 +11,8 @@ import java.util.Set;
 @Table(name = "room")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "idRoom"
+        property = "idRoom",
+        scope = Room.class
 )
 public class Room {
     @Id
@@ -21,6 +22,8 @@ public class Room {
 
     @Column(name = "identifier",length = 20)
     private String identifier;
+
+
 
     @Column(name = "status",columnDefinition = "int default 1")
     private int status;
@@ -88,4 +91,5 @@ public class Room {
     public void setIncidences(List<Incidence> incidences) {
         this.incidences = incidences;
     }
+
 }

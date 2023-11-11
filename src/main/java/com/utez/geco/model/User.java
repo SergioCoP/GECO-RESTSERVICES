@@ -11,7 +11,8 @@ import java.util.Set;
 @Table(name = "user")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "idUser"
+        property = "idUser",
+        scope = User.class
 )
 public class User {
     @Id
@@ -21,7 +22,7 @@ public class User {
 
     @Column(name = "email",nullable = false)
     private String email;
-    @Column(name = "password",nullable = false)
+    @Column(name = "password",nullable = false,length = 255)
     private String password;
     @Column(name = "status",nullable = false,columnDefinition = "int default 1")
     private int status;
@@ -34,12 +35,16 @@ public class User {
     @JoinColumn(name="idPerson")
     private Person idPerson;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="idHotel")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_hotel",
+            joinColumns = @JoinColumn(name="idUser"),
+            inverseJoinColumns = @JoinColumn(name = "idHotel")
+    )
     private Hotel idHotel;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinTable(
             name="user_rol",
             joinColumns = @JoinColumn(name="idUser"),
@@ -127,6 +132,7 @@ public class User {
     public void setIncidences(List<Incidence> incidences) {
         this.incidences = incidences;
     }
+
 
 
 }

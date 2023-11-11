@@ -8,7 +8,8 @@ import jakarta.persistence.*;
 @Table(name = "person")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "idPerson"
+        property = "idPerson",
+        scope = Person.class
 )
 public class Person {
     @Id
@@ -25,6 +26,7 @@ public class Person {
 
     @OneToOne(mappedBy = "idPerson")
     private User idUser;
+
 
 
     public Person() {

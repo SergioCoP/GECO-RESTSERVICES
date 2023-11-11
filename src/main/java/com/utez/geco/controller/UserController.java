@@ -5,6 +5,7 @@ import com.utez.geco.service.User.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
 
 @RestController
@@ -14,6 +15,7 @@ public class UserController {
     String msg = "";
     @Autowired
     private UserServiceImpl userService;
+
 
     @PostMapping("/registerUser")
     @ResponseBody

@@ -32,24 +32,21 @@ public class RoomController {
     @PostMapping("/saveRoom")
     @ResponseBody
     public String createRoom(@RequestBody Room nrom){
-        Room nRom = roomService.register(nrom);
-        msg = nRom != null ?  "Register" : "NotRegistered";
+        msg =roomService.register(nrom) != null ?  "Register" : "NotRegistered";
         return msg;
     }
 
     @PutMapping("/updateRoom")
     @ResponseBody
     public String updateRoom(@RequestBody Room uRoom){
-        Room uRom = roomService.update(uRoom);
-        msg = uRom != null ? "Update" : "NotUpdated";
+        msg = roomService.update(uRoom) != null ? "Update" : "NotUpdated";
         return msg;
     }
 
     @DeleteMapping("/deleteRoom")
     @ResponseBody
     public String deleteRoom(@RequestParam("idRoom") Long id){
-        Room rom = roomService.findById(id);
-        if(rom != null){
+        if(roomService.findById(id)!= null){
             roomService.delete(id);
             return "Deleted";
         }else{

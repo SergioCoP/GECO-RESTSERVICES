@@ -18,6 +18,7 @@ public class RoomServiceImpl extends Room {
 
     public List<Room> findAll(){return roomRepository.findAll();}
     public Room findById(Long id){return roomRepository.findByIdRoom(id);}
+
     public Room register(Room room){return roomRepository.save(room);}
     public Room update(Room room){return roomRepository.save(room);}
     public void delete(Long id){
