@@ -37,10 +37,15 @@ public class HotelController {
 
     @PostMapping("/saveHotel")
     @ResponseBody
-    public String saveHotel(@RequestBody Hotel nhotel){
+    public String saveHotel(@RequestBody Hotel nhotel,@RequestParam("idUser")Long id){
         if(!new Gson().toJson(nhotel).equals("null")){
             if(new Gson().toJson(hotelService.findByName(nhotel.getName())).equals("null") ){
-                msg = hotelService.register(nhotel)  != null ? "Register": "NotRegister";
+                if(hotelService.register(nhotel)  != null){
+                    Hotel sHot = hotelService.findByName(nhotel.getName());
+                    if(sHot != null){
+                        msg = hotelService.assignHotelUser(sHot.getIdHotel(),id) >= 1 ? "Register": "NotRegister";
+                    }
+                }
             }else{
                 msg = "Exist";
             }
@@ -51,7 +56,7 @@ public class HotelController {
     }
 
     //Falta la insercion en table user_hotel para relacionar elhotel xd
-    
+
     @PutMapping("/updateHotel")
     @ResponseBody
     public String updateHotel(@RequestBody Hotel nhotel){

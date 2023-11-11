@@ -33,6 +33,10 @@ public class HotelServiceImpl extends Hotel {
         );
     }
 
+    public int assignHotelUser(Long idUser,Long idHotel){
+        return hotelRepository.asisgnHotelUser(idUser,idHotel);
+    }
+
     public Hotel updateAll(Hotel hotel){return  hotelRepository.save(hotel);}
     public void delete(Long id){hotelRepository.deleteById(id);}
 }

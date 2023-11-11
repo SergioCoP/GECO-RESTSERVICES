@@ -27,4 +27,9 @@ public interface HotelRepository  extends JpaRepository<Hotel,Long>{
     UserHotel findHotelWithUser(@Param("idHotel")Long id);
 
 
+    @Modifying
+    @Transactional
+    @Query(value = "insert into user_hotel values(:idUser,:idHotel)",nativeQuery = true)
+    int asisgnHotelUser(@Param("idUser")Long idUser,@Param("idHotel")Long idHotel);
+
 }
