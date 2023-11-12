@@ -33,7 +33,7 @@ public class Hotel {
 
     //idUser
 
-    @OneToMany(mappedBy = "idHotel",cascade = CascadeType.ALL,orphanRemoval = true)
+    @ManyToMany(mappedBy = "hotels",cascade = CascadeType.ALL)
     private List<User> users = new ArrayList<>();
 
     public Hotel() {

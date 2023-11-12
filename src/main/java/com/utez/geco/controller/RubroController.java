@@ -5,58 +5,125 @@ import com.utez.geco.model.Rubro;
 import com.utez.geco.service.Rubro.RubroServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/rubro")
 @CrossOrigin(origins = "*")
 public class RubroController {
     String msg = "";
+    String[] blacklist = {";", "@@",
+            "SELECT", "select", "script>", "<script", "UPDATE",
+            "update", "DELETE", "delete", "input", "button",
+            "div", "html", "char", "varchar", "nvarchar", "hooks.js",
+            "int", "integer", "String", "sys", "sysobjects",
+            "sysobject",".js"};
+
+    String[] blacklist2 = {"@@", "SELECT", "select", "script>", "<script", "UPDATE",
+            "update", "DELETE", "delete", "input", "button",
+            "div", "html", "char", "varchar", "nvarchar", "hooks.js",
+            "int", "integer", "String", "sys", "sysobjects",
+            "sysobject",".js"};
     @Autowired
     private RubroServiceImpl rubroService;
 
     @GetMapping("/getAllRubros")
     @ResponseBody
-    public List<Rubro> getAllRubros(){return rubroService.findAll();}
+    public ResponseEntity<?> getAllRubros(){
+        Map<String, Object> map = new HashMap<>();
+        map.put("msg","OK");
+        map.put("data",rubroService.findAll());
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
 
     @GetMapping("/getRubro")
     @ResponseBody
-    public Rubro getRubroById(@RequestParam("idRubro") Long id){
-        return rubroService.findById(id);
+    public ResponseEntity<?> getRubroById(@RequestParam("idRubro") Long id){
+        Map<String, Object> map = new HashMap<>();
+        Rubro rubro = rubroService.findById(id);
+        if(rubro != null){
+            map.put("msg","OK");
+            map.put("data",rubro);
+            return new ResponseEntity<>(map,HttpStatus.OK);
+        }else{
+            map.put("msg","NotFound");
+            return new ResponseEntity<>(map,HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/saveRubro")
     @ResponseBody
-    public String createRubro(@RequestBody Rubro rubro){
-        Rubro nrub = rubroService.register(rubro);
-        msg = nrub != null ? "Register" : "NotRegistered";
-        return msg;
+    public ResponseEntity<?> createRubro(@RequestBody Rubro rubro){
+        Map<String, Object> map = new HashMap<>();
+        if(!containsMaliciusWord(rubro.toString())){
+            Rubro nrub = rubroService.register(rubro);
+            if(rubro != null){
+                map.put("msg","Register");
+                map.put("data",nrub);
+                return new ResponseEntity<>(map,HttpStatus.CREATED);
+            }else{
+                map.put("msg","NotRegister");
+                return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+            }
+        }else{
+            map.put("msg","BadWord");
+            return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+        }
+
     }
 
     @PutMapping("/updateRubro")
     @ResponseBody
-    public String updateRubro(@RequestBody Rubro rubro){
-        Rubro nrub = rubroService.update(rubro);
-        msg = nrub != null ? "Update" : "NotUpdated";
-        return msg;
+    public ResponseEntity<?> updateRubro(@RequestBody Rubro rubro){
+        Map<String, Object> map = new HashMap<>();
+        if(containsMaliciusWord(rubro.toString())){
+            Rubro nrub = rubroService.update(rubro);
+            if(nrub != null){
+                map.put("msg","Update");
+                return new ResponseEntity<>(map,HttpStatus.CREATED);
+            }else{
+                map.put("msg","NotUpdate");
+                return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+            }
+        }else{
+            map.put("msg","BadWord");
+            return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+        }
     }
 
     @DeleteMapping("/deleteRubro")
     @ResponseBody
-    public String deleteRubro(@RequestParam("idRubro") Long id){
-        System.out.println(id);
+    public ResponseEntity<?> deleteRubro(@RequestParam("idRubro") Long id){
+        Map<String, Object> map = new HashMap<>();
         Rubro nrub = rubroService.findById(id);
         if(nrub != null){
             rubroService.delete(id);
-            msg = "Deleted";
+            map.put("msg","Delete");
+            return new ResponseEntity<>(map,HttpStatus.OK);
         }else{
-            msg = "NotFound";
+            map.put("msg","NotFound");
+            return new ResponseEntity<>(map,HttpStatus.NOT_FOUND);
         }
-        return msg;
     }
 
-
+    private boolean containsMaliciusWord(String texto) {
+        for (String palabra : blacklist) {
+            if (texto.toLowerCase().contains(palabra.toLowerCase())) {
+                return true;
+            }
+        }
+        for (String palabra : blacklist2) {
+            if (texto.toLowerCase().contains(palabra.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

@@ -35,13 +35,13 @@ public class User {
     @JoinColumn(name="idPerson")
     private Person idPerson;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_hotel",
             joinColumns = @JoinColumn(name="idUser"),
             inverseJoinColumns = @JoinColumn(name = "idHotel")
     )
-    private Hotel idHotel;
+    private List<Hotel> hotels;
 
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -101,12 +101,12 @@ public class User {
         this.idPerson = idPerson;
     }
 
-    public Hotel getIdHotel() {
-        return idHotel;
+    public List<Hotel> getHotels() {
+        return hotels;
     }
 
-    public void setIdHotel(Hotel idHotel) {
-        this.idHotel = idHotel;
+    public void setHotels(List<Hotel> hotels) {
+        this.hotels = hotels;
     }
 
     public Role getIdRol() {
