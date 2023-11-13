@@ -23,6 +23,9 @@ public class Person {
     private String surname;
     @Column(name = "lastname",nullable = true,length = 60)
     private String lastname;
+    @Column(name = "turn",nullable = false,length = 60)
+    private String turn;
+
 
     @OneToOne(mappedBy = "idPerson")
     private User idUser;
@@ -72,5 +75,11 @@ public class Person {
         this.idUser = idUser;
     }
 
+    public String getTurn() {
+        return turn;
+    }
 
+    public void setTurn(String turn) {
+        this.turn = turn;
+    }
 }

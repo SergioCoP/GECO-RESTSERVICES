@@ -62,11 +62,22 @@ public class RoomController {
 
     @PostMapping("/saveRoom")
     @ResponseBody
-    public ResponseEntity<?> createRoom(@RequestBody Room nrom){
+    public ResponseEntity<?> createRoom(@RequestBody Room nrom,
+            @RequestParam("nameInit")String nameInit,
+            @RequestParam("numInit")int numInit,
+            @RequestParam("numHab")int numHabitaciones) {
+        int nrrooms =0;
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(nrom.toString())){
-            Room room = roomService.register(nrom);
-            if(room != null){
+            for (int i = 0; i < numHabitaciones; i++) {
+                nrom.setIdRoom((long) (i+1));
+                nrom.setIdentifier(nameInit + (numInit+(i+1)));
+                Room room = roomService.register(nrom);
+                if(nrom != null){
+                    nrrooms+=1;
+                }
+            }
+            if( nrrooms == numHabitaciones){
                 map.put("msg","Register");
                 return new ResponseEntity<>(map,HttpStatus.OK);
             }else{
