@@ -2,6 +2,7 @@ package com.utez.geco.controller;
 
 import com.utez.geco.model.User;
 import com.utez.geco.service.User.UserServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/user")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class UserController {
 
     String[] blacklist = {";", "@@",
@@ -34,6 +36,7 @@ public class UserController {
     @Autowired
     private UserServiceImpl userService;
 
+private final AuthService authService;
 
     @PostMapping("/registerUser")
     @ResponseBody
@@ -44,6 +47,7 @@ public class UserController {
                 User nUser = userService.register(newUser);
                 if(nUser != null){
                     map.put("msg","Register");
+                    map.put("data",authService.login(nUser));
                     return new ResponseEntity<>(map, HttpStatus.CREATED);
                 }else{
                     map.put("msg", "NotExist");
@@ -93,7 +97,7 @@ public class UserController {
             return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/login")
+    @PostMapping ("/login")
     @ResponseBody
     public ResponseEntity<?> findByEmailAndPassword(@RequestParam(name = "email")String email,@RequestParam(name = "password") String password){
         Map<String, Object> map = new HashMap<>();
@@ -101,6 +105,7 @@ public class UserController {
             User nUser = userService.findByEmailAndPassword(email,password);
             if(nUser != null){
                 map.put("msg","Loged");
+                map.put("data",authService.login(nUser));
                 return new ResponseEntity<>(map, HttpStatus.OK);
             }else{
                 map.put("msg","NotExist");
