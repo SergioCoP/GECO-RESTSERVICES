@@ -8,7 +8,8 @@ import jakarta.persistence.*;
 @Table(name = "person")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "idPerson"
+        property = "idPerson",
+        scope = Person.class
 )
 public class Person {
     @Id
@@ -22,9 +23,13 @@ public class Person {
     private String surname;
     @Column(name = "lastname",nullable = true,length = 60)
     private String lastname;
+    @Column(name = "turn",nullable = false,length = 60)
+    private String turn;
+
 
     @OneToOne(mappedBy = "idPerson")
     private User idUser;
+
 
 
     public Person() {
@@ -70,5 +75,11 @@ public class Person {
         this.idUser = idUser;
     }
 
+    public String getTurn() {
+        return turn;
+    }
 
+    public void setTurn(String turn) {
+        this.turn = turn;
+    }
 }

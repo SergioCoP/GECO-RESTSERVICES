@@ -3,52 +3,138 @@ package com.utez.geco.controller;
 import com.utez.geco.model.User;
 import com.utez.geco.service.User.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/user")
 @CrossOrigin(origins = "*")
 public class UserController {
+
+    String[] blacklist = {";", "@@",
+            "SELECT", "select", "script>", "<script", "UPDATE",
+            "update", "DELETE", "delete", "input", "button",
+            "div", "html", "char", "varchar", "nvarchar", "hooks.js",
+            "int", "integer", "String", "sys", "sysobjects",
+            "sysobject",".js"};
+
+    String[] blacklist2 = {"@@", "SELECT", "select", "script>", "<script", "UPDATE",
+            "update", "DELETE", "delete", "input", "button",
+            "div", "html", "char", "varchar", "nvarchar", "hooks.js",
+            "int", "integer", "String", "sys", "sysobjects",
+            "sysobject",".js"};
     String msg = "";
     @Autowired
     private UserServiceImpl userService;
 
+
     @PostMapping("/registerUser")
     @ResponseBody
-    public String registerUser(@RequestBody User newUser){
-        if(userService.findByEmail(newUser.getEmail()) == null){
-            User nUser = userService.register(newUser);
-            if(nUser != null){
-                msg = "Register";
+    public ResponseEntity<?> registerUser(@RequestBody User newUser){
+        Map<String, Object> map = new HashMap<>();
+        if(!containsMaliciusWord(newUser.toString())){
+            if(userService.findByEmail(newUser.getEmail()) == null){
+                User nUser = userService.register(newUser);
+                if(nUser != null){
+                    map.put("msg","Register");
+                    return new ResponseEntity<>(map, HttpStatus.CREATED);
+                }else{
+                    map.put("msg", "NotExist");
+                    return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+                }
             }else{
-                msg = "NotRegister";
+                map.put("msg", "Exist");
+                return new ResponseEntity<>(map, HttpStatus.CONFLICT);
             }
         }else{
-            msg = "Exist";
+            map.put("msg","BadWord");
+            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
         }
-        return msg;
     }
 
     @GetMapping("/getUserByEmail")
     @ResponseBody
-    public User findUserByEmail(@RequestParam(name = "email") String email) {
-        return userService.findByEmail(email);
-    }
+    public ResponseEntity<?> findUserByEmail(@RequestParam(name = "email") String email) {
+        Map<String, Object> map = new HashMap<>();
+        if(!containsMaliciusWord(email)){
+            User nUser = userService.findByEmail(email);
+                if(nUser != null){
+                    map.put("msg", "OK");
+                    map.put("data",nUser);
+                    return new ResponseEntity<>(map, HttpStatus.OK);
+                }else{
+                    map.put("msg", "FAIL");
+                    return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+                }
+        }else{
+            map.put("msg","BadWord");
+            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+        }
 
+    }
+    @GetMapping("/getUserById")
+    @ResponseBody
+    public ResponseEntity<?> findUserById(@RequestParam(name = "idUser") Long id) {
+        Map<String, Object> map = new HashMap<>();
+        User nUser = userService.findById(id);
+        if(nUser != null){
+            map.put("msg","OK");
+            map.put("data",nUser);
+            return new ResponseEntity<>(map, HttpStatus.OK);
+        }else{
+            map.put("msg", "NotExist");
+            return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+        }
+    }
     @GetMapping("/login")
     @ResponseBody
-    public boolean findByEmailAndPassword(@RequestParam(name = "email")String email,@RequestParam(name = "password") String password){
-        User nUser = userService.findByEmailAndPassword(email,password);
-        return nUser != null;
+    public ResponseEntity<?> findByEmailAndPassword(@RequestParam(name = "email")String email,@RequestParam(name = "password") String password){
+        Map<String, Object> map = new HashMap<>();
+        if(!containsMaliciusWord(email) || containsMaliciusWord(password)){
+            User nUser = userService.findByEmailAndPassword(email,password);
+            if(nUser != null){
+                map.put("msg","Loged");
+                return new ResponseEntity<>(map, HttpStatus.OK);
+            }else{
+                map.put("msg","NotExist");
+                return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+            }
+
+        }else{
+            map.put("msg","BadWord");
+            return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+        }
+
     }
 
     @GetMapping("/getUsers")
     @ResponseBody
-    public List<User> getAllUsers(){
-        return userService.findAll();
+    public ResponseEntity<?> getAllUsers(){
+        Map<String, Object> map = new HashMap<>();
+        List<User> users = userService.findAll();
+        map.put("msg","OK");
+        map.put("data",users);
+        return new ResponseEntity<>(map,HttpStatus.OK);
     }
 
-
+    private boolean containsMaliciusWord(String texto) {
+        for (String palabra : blacklist) {
+            if (texto.toLowerCase().contains(palabra.toLowerCase())) {
+                return true;
+            }
+        }
+        for (String palabra : blacklist2) {
+            if (texto.toLowerCase().contains(palabra.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

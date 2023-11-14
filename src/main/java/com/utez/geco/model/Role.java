@@ -10,7 +10,8 @@ import java.util.List;
 @Table(name = "rol")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "idRol"
+        property = "idRol",
+        scope = Role.class
 )
 public class Role {
     @Id
@@ -25,6 +26,8 @@ public class Role {
     //many to many xd
     @OneToMany(mappedBy = "idRol",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<User> users = new ArrayList<>();
+
+
 
     public Role() {
     }
@@ -60,4 +63,5 @@ public class Role {
     public void setUsers(List<User> users) {
         this.users = users;
     }
+
 }

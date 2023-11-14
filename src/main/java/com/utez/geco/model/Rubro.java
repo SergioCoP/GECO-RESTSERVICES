@@ -9,7 +9,8 @@ import jakarta.persistence.*;
 @Table(name = "rubro")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "idRubro"
+        property = "idRubro",
+        scope = Rubro.class
 )
 public class Rubro {
     @Id
@@ -55,4 +56,6 @@ public class Rubro {
     public void setIdRoom(Room idRoom) {
         this.idRoom = idRoom;
     }
+
+
 }

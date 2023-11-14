@@ -9,7 +9,8 @@ import java.util.Date;
 @Table(name = "incidence")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "idIncidence"
+        property = "idIncidence",
+        scope = Incidence.class
 )
 public class Incidence {
     @Id

@@ -13,6 +13,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     User findByEmail(String email);
 
+    User findByIdUser(Long id);
     @Query(value = "select u.*,p.name,p.surname,p.lastname from user u\n" +
             "inner join person p on p.id_person = u.id_person;", nativeQuery = true)
     List<User> findAllUsers();
