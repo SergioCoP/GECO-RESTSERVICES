@@ -4,17 +4,31 @@ import com.utez.geco.model.User;
 import com.utez.geco.repository.User.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @Transactional
-public class UserServiceImpl extends User {
+public class UserServiceImpl implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
     public List<User> findAll(){return userRepository.findAll();}
+
+    @Override
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                return userRepository.findByEmail(username);
+            }
+        };
+    }
+
     public User findByEmail(String email){return userRepository.findByEmail(email);}
     public User findById(Long id){return userRepository.findByIdUser(id);}
     public List<User> findAllUsers(){return userRepository.findAllUsers();}

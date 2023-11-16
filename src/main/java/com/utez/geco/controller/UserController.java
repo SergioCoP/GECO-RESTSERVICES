@@ -36,7 +36,6 @@ public class UserController {
     @Autowired
     private UserServiceImpl userService;
 
-private final AuthService authService;
 
     @PostMapping("/registerUser")
     @ResponseBody
@@ -47,7 +46,7 @@ private final AuthService authService;
                 User nUser = userService.register(newUser);
                 if(nUser != null){
                     map.put("msg","Register");
-                    map.put("data",authService.login(nUser));
+                    map.put("data","");
                     return new ResponseEntity<>(map, HttpStatus.CREATED);
                 }else{
                     map.put("msg", "NotExist");
@@ -105,7 +104,7 @@ private final AuthService authService;
             User nUser = userService.findByEmailAndPassword(email,password);
             if(nUser != null){
                 map.put("msg","Loged");
-                map.put("data",authService.login(nUser));
+                map.put("data","");
                 return new ResponseEntity<>(map, HttpStatus.OK);
             }else{
                 map.put("msg","NotExist");
