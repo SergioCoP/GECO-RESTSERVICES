@@ -13,6 +13,7 @@ import java.util.List;
         property = "idRol",
         scope = Role.class
 )
+
 public class Role {
     @Id
     @Column(name = "idRol",nullable = false,unique = true)

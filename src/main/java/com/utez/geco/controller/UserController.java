@@ -6,13 +6,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -67,8 +70,9 @@ public class UserController {
     public ResponseEntity<?> findUserByEmail(@RequestParam(name = "email") String email) {
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(email)){
-            User nUser = userService.findByEmail(email);
-                if(nUser != null){
+
+            Optional<User> nUser = userService.findByEmail(email);
+                if(nUser.isPresent()){
                     map.put("msg", "OK");
                     map.put("data",nUser);
                     return new ResponseEntity<>(map, HttpStatus.OK);
@@ -102,9 +106,11 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(email) || containsMaliciusWord(password)){
             User nUser = userService.findByEmailAndPassword(email,password);
-            if(nUser != null){
-                map.put("msg","Loged");
-                map.put("data","");
+            if(nUser != null ){
+
+                    map.put("msg","Loged");
+                    map.put("data","");
+
                 return new ResponseEntity<>(map, HttpStatus.OK);
             }else{
                 map.put("msg","NotExist");
