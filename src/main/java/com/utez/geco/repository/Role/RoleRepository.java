@@ -15,4 +15,6 @@ public interface RoleRepository extends JpaRepository<Role, String> {
             "join user u on ur.id_user = u.id_user\n" +
             "where u.id_user = :idUser;",nativeQuery = true)
     String findRoleByIdUser(@Param("idUser")Long idUser);
+
+    Role findByName(String name);
 }

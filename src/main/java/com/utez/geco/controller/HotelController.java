@@ -1,22 +1,14 @@
 package com.utez.geco.controller;
 
-import com.google.api.client.json.Json;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.utez.geco.DTO.UserHotel;
 import com.utez.geco.model.Hotel;
-import com.utez.geco.model.User;
 import com.utez.geco.service.Hotel.HotelServiceImpl;
-import com.utez.geco.service.Image.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController

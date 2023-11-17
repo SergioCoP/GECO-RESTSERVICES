@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class UserServiceImpl implements UserDetailsService{
+public class UserServiceImpl implements IUserService{
     @Autowired
     private UserRepository userRepository;
 
@@ -31,8 +31,12 @@ public class UserServiceImpl implements UserDetailsService{
 
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Email" + username + "Not found"));
+    public UserDetailsService userDetailsService(){
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                return userRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("User not found")) ;
+            }
+        };
     }
 }

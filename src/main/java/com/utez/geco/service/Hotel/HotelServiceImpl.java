@@ -1,8 +1,5 @@
 package com.utez.geco.service.Hotel;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.utez.geco.DTO.UserHotel;
 import com.utez.geco.model.Hotel;
 import com.utez.geco.repository.Hotel.HotelRepository;
 import jakarta.transaction.Transactional;
@@ -22,7 +19,6 @@ public class HotelServiceImpl extends Hotel {
     public Hotel findById(Long id){return hotelRepository.findByIdHotel(id);}
 
     public Hotel findByName(String name){return hotelRepository.findByName(name);}
-    public UserHotel findHotelWithUser(Long id){return hotelRepository.findHotelWithUser(id);}
     public Hotel register(Hotel hotel){return hotelRepository.save(hotel);}
     public int update(String colorfont,String colorprimary,
                         String colorsecondary,String colortertiary,

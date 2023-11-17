@@ -68,6 +68,10 @@ public class User implements UserDetails{
     public User(String username, String hash, Collection<? extends GrantedAuthority> authorities) {
     }
 
+    public User() {
+
+    }
+
 
     public Long getIdUser() {
         return idUser;
@@ -142,7 +146,8 @@ public class User implements UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Set.of();
+
+        return List.of(new SimpleGrantedAuthority(idRol.getName()));
     }
 
     @Override

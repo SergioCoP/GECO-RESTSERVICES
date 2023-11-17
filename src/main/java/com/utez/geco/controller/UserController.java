@@ -1,6 +1,8 @@
 package com.utez.geco.controller;
 
+import com.utez.geco.DTO.SignupRequest;
 import com.utez.geco.model.User;
+import com.utez.geco.service.User.UserAthenticationImpl;
 import com.utez.geco.service.User.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,18 +40,19 @@ public class UserController {
     String msg = "";
     @Autowired
     private UserServiceImpl userService;
+    private final UserAthenticationImpl authenticationService;
 
 
     @PostMapping("/registerUser")
     @ResponseBody
-    public ResponseEntity<?> registerUser(@RequestBody User newUser){
+    public ResponseEntity<?> registerUser(@RequestBody SignupRequest newUser){
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(newUser.toString())){
-            if(userService.findByEmail(newUser.getEmail()) == null){
-                User nUser = userService.register(newUser);
+            if(userService.findByEmail(newUser.getEmail()).isEmpty()){
+                User nUser = authenticationService.signup(newUser);
                 if(nUser != null){
                     map.put("msg","Register");
-                    map.put("data","");
+                    map.put("data",nUser);
                     return new ResponseEntity<>(map, HttpStatus.CREATED);
                 }else{
                     map.put("msg", "NotExist");
