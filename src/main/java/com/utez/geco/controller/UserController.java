@@ -1,16 +1,21 @@
 package com.utez.geco.controller;
 
+import com.utez.geco.DTO.SigninRequest;
 import com.utez.geco.DTO.SignupRequest;
 import com.utez.geco.model.User;
 import com.utez.geco.service.User.UserAthenticationImpl;
 import com.utez.geco.service.User.UserServiceImpl;
+import jdk.swing.interop.SwingInterOpUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -41,7 +46,7 @@ public class UserController {
     @Autowired
     private UserServiceImpl userService;
     private final UserAthenticationImpl authenticationService;
-
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/registerUser")
     @ResponseBody
@@ -59,7 +64,7 @@ public class UserController {
                     return new ResponseEntity<>(map, HttpStatus.CONFLICT);
                 }
             }else{
-                map.put("msg", "Exist");
+                map.put("msg", "ExistEmail");
                 return new ResponseEntity<>(map, HttpStatus.CONFLICT);
             }
         }else{
@@ -68,6 +73,32 @@ public class UserController {
         }
     }
 
+    @PostMapping("/UpdateUser")
+    @ResponseBody
+    public ResponseEntity<?> updateUser(@RequestBody SignupRequest newUser){
+        Map<String, Object> map = new HashMap<>();
+        if(!containsMaliciusWord(newUser.toString())){
+            if(userService.findByEmail(newUser.getEmail()).isEmpty()){
+                User nUser = authenticationService.signup(newUser);
+                if(nUser != null){
+                    map.put("msg","Register");
+                    map.put("data",nUser);
+                    return new ResponseEntity<>(map, HttpStatus.CREATED);
+                }else{
+                    map.put("msg", "NotExist");
+                    return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+                }
+            }else{
+                map.put("msg", "ExistEmail");
+                return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+            }
+        }else{
+            map.put("msg","BadWord");
+            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_GERENTE')")
     @GetMapping("/getUserByEmail")
     @ResponseBody
     public ResponseEntity<?> findUserByEmail(@RequestParam(name = "email") String email) {
@@ -107,13 +138,22 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<?> findByEmailAndPassword(@RequestParam(name = "email")String email,@RequestParam(name = "password") String password){
         Map<String, Object> map = new HashMap<>();
+        SigninRequest signinRequest = new SigninRequest();
         if(!containsMaliciusWord(email) || containsMaliciusWord(password)){
-            User nUser = userService.findByEmailAndPassword(email,password);
-            if(nUser != null ){
+            Optional<User> nUser = userService.findByEmail(email);
+            System.out.println(nUser.get().getEmail());
+            if(nUser.isPresent()){
+                if(passwordEncoder.matches(password,nUser.get().getPassword())){
+                    signinRequest.setEmail(email);
+                    signinRequest.setPassword(password);
+                    System.out.println(password + "Apunto de loguearse");
+                    System.out.println(authenticationService.signin(signinRequest));
 
                     map.put("msg","Loged");
-                    map.put("data","");
-
+                    map.put("data",authenticationService.signin(signinRequest));
+                }else{
+                    map.put("msg","EmailPassFail");
+                }
                 return new ResponseEntity<>(map, HttpStatus.OK);
             }else{
                 map.put("msg","NotExist");
@@ -127,6 +167,7 @@ public class UserController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_GERENTE')")
     @GetMapping("/getUsers")
     @ResponseBody
     public ResponseEntity<?> getAllUsers(){

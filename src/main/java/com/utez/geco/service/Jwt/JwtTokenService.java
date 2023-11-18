@@ -16,6 +16,7 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 
@@ -27,6 +28,16 @@ public class JwtTokenService {
 
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .signWith(generateKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        return Jwts.builder()
+                .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)

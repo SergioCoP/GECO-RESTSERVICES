@@ -3,6 +3,7 @@ package com.utez.geco.SecurityConfig;
 import com.utez.geco.model.User;
 import com.utez.geco.repository.User.UserRepository;
 import com.utez.geco.service.Jwt.JwtTokenService;
+import com.utez.geco.service.User.UserServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,9 +11,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -23,35 +28,38 @@ public class JwtAutheticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenService jwtService;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserServiceImpl userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        //1. Obtener el header que contiene el jwt
-        String authHeader = request.getHeader("Authorization"); // Bearer jwt
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String userEmail;
 
-        if(authHeader == null || !authHeader.startsWith("Bearer ")){
-            filterChain.doFilter(request, response);
+        if(StringUtils.isEmpty(authHeader) || !org.apache.commons.lang3.StringUtils.startsWith(authHeader,"Bearer ")){
+            filterChain.doFilter(request,response);
             return;
         }
 
-        //2. Obtener jwt desde header
-        String jwt = authHeader.split(" ")[1];
+        jwt = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(jwt);
 
-        //3. Obtener subject/username desde el jwt
-        String username = jwtService.extractUsername(jwt);
+        if(!StringUtils.isEmpty(userEmail) && SecurityContextHolder.getContext().getAuthentication() == null){
+            UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userEmail);
 
-        //4. Setear un objeto Authentication dentro del SecurityContext
+            if(jwtService.isTokenValid(jwt,userDetails)){
+                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 
-        User user = userRepository.findByEmail(username).get();
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                username, null, user.getAuthorities()
-        );
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                        userDetails, null,userDetails.getAuthorities()
+                );
 
-        //5. Ejecutar el restro de filtros
+                token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-        filterChain.doFilter(request, response);
+                securityContext.setAuthentication(token);
+                SecurityContextHolder.setContext(securityContext);
+            }
+        }
+        filterChain.doFilter(request,response);
     }
 }
