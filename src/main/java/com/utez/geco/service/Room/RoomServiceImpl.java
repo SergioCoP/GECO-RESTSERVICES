@@ -1,6 +1,9 @@
 package com.utez.geco.service.Room;
 
 import com.google.gson.Gson;
+import com.utez.geco.DTO.Room.RoomWithUserById;
+import com.utez.geco.DTO.Room.RoomsDTO;
+import com.utez.geco.DTO.Room.RoomsWithUser;
 import com.utez.geco.model.Room;
 import com.utez.geco.repository.Room.RoomRepository;
 import jakarta.transaction.Transactional;
@@ -16,18 +19,30 @@ public class RoomServiceImpl extends Room {
     @Autowired
     private RoomRepository roomRepository;
 
-    public List<Room> findAll(){return roomRepository.findAll();}
-    public Room findById(Long id){return roomRepository.findByIdRoom(id);}
+    public List<RoomsDTO> findAll(){return roomRepository.getAllRooms();}
+    public RoomsDTO findById(Long id){return roomRepository.findByIdRoom(id);}
 
-    public Room register(Room room){return roomRepository.save(room);}
+    public int register(Room room){return roomRepository.registerRoom(room.getIdentifier(),room.getDescription(),room.getStatus());}
     public Room update(Room room){return roomRepository.save(room);}
     public void delete(Long id){
         roomRepository.deleteById(id);
     }
 
+    public List<RoomsWithUser> getRoomsWithUser(){
+
+        return roomRepository.getRoomsWithUsers();}
+
+    public RoomWithUserById getRoomWithUserById(Long idRoom){
+        RoomWithUserById ro = new RoomWithUserById();
+        Room rom = roomRepository.getRoomWithUsersById(idRoom);
+        ro.setIdRoom(rom.getIdRoom());
+        ro.setIdentifier(rom.getIdentifier());
+        ro.setUsers(roomRepository.getUsersByIdRoom(idRoom));
+        return ro;
+    }
     public String assignUserToRoom(Long idUser,Long idRoom){
 
-        Room sRom = roomRepository.findByIdRoom(idRoom);
+        RoomsDTO sRom = roomRepository.findByIdRoom(idRoom);
         if(sRom != null){
             if(new Gson().toJson(roomRepository.validateRomUser(idUser,idRoom)).equals("null")){
                 if(roomRepository.assignRoomToUser(idUser, idRoom) >= 1){

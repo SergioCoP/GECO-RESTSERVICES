@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "room")
@@ -27,20 +26,23 @@ public class Room {
 
     @Column(name = "status",columnDefinition = "int default 1")
     private int status;
+
+    @Column(name = "description",length = 255)
+    private String description;
     //rrrom-user
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinTable(
             name = "room_user",
-            joinColumns = @JoinColumn(name ="idRoom"),
-            inverseJoinColumns = @JoinColumn(name = "idUser")
+            joinColumns = @JoinColumn(name ="idUser"),
+            inverseJoinColumns = @JoinColumn(name = "idRoom")
     )
     @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
-    private User idUser;
+    private List<User> idUser ;
    //room-rubro
-    @OneToMany(mappedBy = "idRoom",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "idRoom",fetch = FetchType.EAGER,orphanRemoval = true)
     private List<Rubro> rubros = new ArrayList<>();
 
-    @OneToMany(mappedBy = "idRoom",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "idRoom",fetch = FetchType.EAGER,orphanRemoval = true)
     private List<Incidence> incidences = new ArrayList<>();
 
 
@@ -68,11 +70,19 @@ public class Room {
         this.status = status;
     }
 
-    public User getIdUser() {
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<User> getIdUser() {
         return idUser;
     }
 
-    public void setIdUser(User idUser) {
+    public void setIdUser(List<User> idUser) {
         this.idUser = idUser;
     }
 

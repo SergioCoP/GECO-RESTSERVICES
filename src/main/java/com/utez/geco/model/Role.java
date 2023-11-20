@@ -25,7 +25,7 @@ public class Role {
     private String description;
 
     //many to many xd
-    @OneToMany(mappedBy = "idRol",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "idRol",orphanRemoval = true)
     private List<User> users = new ArrayList<>();
 
 

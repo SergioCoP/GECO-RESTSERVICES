@@ -1,7 +1,7 @@
 package com.utez.geco.controller;
 
-import com.utez.geco.DTO.SigninRequest;
-import com.utez.geco.DTO.SignupRequest;
+
+import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.User;
 import com.utez.geco.service.User.UserAthenticationImpl;
 import com.utez.geco.service.User.UserServiceImpl;
@@ -105,8 +105,8 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(email)){
 
-            Optional<User> nUser = userService.findByEmail(email);
-                if(nUser.isPresent()){
+            UsersDTO nUser = userService.findByEmail(email);
+                if(nUser != null){
                     map.put("msg", "OK");
                     map.put("data",nUser);
                     return new ResponseEntity<>(map, HttpStatus.OK);
@@ -124,7 +124,7 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<?> findUserById(@RequestParam(name = "idUser") Long id) {
         Map<String, Object> map = new HashMap<>();
-        User nUser = userService.findById(id);
+        UsersDTO nUser = userService.findById(id);
         if(nUser != null){
             map.put("msg","OK");
             map.put("data",nUser);
@@ -140,20 +140,11 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         SigninRequest signinRequest = new SigninRequest();
         if(!containsMaliciusWord(email) || containsMaliciusWord(password)){
-            Optional<User> nUser = userService.findByEmail(email);
-            System.out.println(nUser.get().getEmail());
-            if(nUser.isPresent()){
-                if(passwordEncoder.matches(password,nUser.get().getPassword())){
-                    signinRequest.setEmail(email);
-                    signinRequest.setPassword(password);
-                    System.out.println(password + "Apunto de loguearse");
-                    System.out.println(authenticationService.signin(signinRequest));
 
-                    map.put("msg","Loged");
-                    map.put("data",authenticationService.signin(signinRequest));
-                }else{
-                    map.put("msg","EmailPassFail");
-                }
+            System.out.println("Correo ->" + email + "  Contraseña ->" + password);
+            User nUser = userService.findByEmailAndPassword(email,password);
+            if(nUser != null){
+                map.put("msg","Loged");
                 return new ResponseEntity<>(map, HttpStatus.OK);
             }else{
                 map.put("msg","NotExist");

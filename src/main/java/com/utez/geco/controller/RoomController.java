@@ -1,10 +1,12 @@
 package com.utez.geco.controller;
 
 
+import com.utez.geco.DTO.Room.RoomWithUserById;
+import com.utez.geco.DTO.Room.RoomsDTO;
+import com.utez.geco.DTO.Room.RoomsWithUser;
 import com.utez.geco.model.Room;
 import com.utez.geco.service.Room.RoomServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +50,7 @@ public class RoomController {
     @ResponseBody
     public ResponseEntity<?> getRoomById(@RequestParam("idRoom") Long id){
         Map<String, Object> map = new HashMap<>();
-        Room room = roomService.findById(id);
+        RoomsDTO room = roomService.findById(id);
         if(room != null){
             map.put("msg","OK");
             map.put("data",room);
@@ -58,6 +60,35 @@ public class RoomController {
             return new ResponseEntity<>(map,HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    @GetMapping("/getRoomsWithUser")
+    @ResponseBody
+    public ResponseEntity<?> getRoomsWithUser(){
+        //new Gson().toJson(roomRepository.validateRomUser(idUser,idRoom))
+        List<RoomsWithUser> roUser = roomService.getRoomsWithUser();
+        Map<String, Object> map = new HashMap<>();
+        if(roUser.size() >=1){
+            map.put("msg","OK");
+            map.put("data",roUser);
+        }else{
+            map.put("msg","UsersNotAssigned");
+        }
+        return new ResponseEntity<>(map,HttpStatus.OK);
+    }
+
+    @GetMapping("/getRoomWithUserById")
+    @ResponseBody
+    public ResponseEntity<?> getRoomWithUserById(@RequestParam("idRoom")Long idRoom){
+        Map<String, Object> map = new HashMap<>();
+        RoomWithUserById roUser = roomService.getRoomWithUserById(idRoom);
+        if(roUser != null){
+            map.put("msg","OK");
+            map.put("data",roUser);
+        }else{
+            map.put("msg","UserNotAssigned");
+        }
+        return new ResponseEntity<>(map,HttpStatus.OK);
     }
 
     @PostMapping("/saveRoom")
@@ -72,8 +103,8 @@ public class RoomController {
             for (int i = 0; i < numHabitaciones; i++) {
                 nrom.setIdRoom((long) (i+1));
                 nrom.setIdentifier(nameInit + (numInit+(i+1)));
-                Room room = roomService.register(nrom);
-                if(nrom != null){
+                nrom.setDescription(nrom.getDescription());
+                if(roomService.register(nrom) >=1){
                     nrrooms+=1;
                 }
             }
@@ -94,7 +125,7 @@ public class RoomController {
     @ResponseBody
     public ResponseEntity<?> updateRoom(@RequestBody Room uRoom){
         Map<String, Object> map = new HashMap<>();
-        if(containsMaliciusWord(uRoom.toString())){
+        if(!containsMaliciusWord(uRoom.toString())){
             Room room =roomService.update(uRoom);
             if(room != null){
                 map.put("msg","Update");

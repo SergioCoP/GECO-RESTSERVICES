@@ -1,5 +1,6 @@
 package com.utez.geco.service.User;
 
+import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.User;
 import com.utez.geco.repository.User.UserRepository;
 import jakarta.transaction.Transactional;
@@ -21,10 +22,10 @@ public class UserServiceImpl implements IUserService{
 
     public List<User> findAll(){return userRepository.findAll();}
 
+    public UsersDTO findByEmail(String email){return userRepository.findByEmail(email);}
+    public UsersDTO findById(Long id){return userRepository.findByIdUser(id);}
+    public List<UsersDTO> findAllUsers(){return userRepository.findAllUsers();}
 
-    public Optional<User> findByEmail(String email){return userRepository.findByEmail(email);}
-    public User findById(Long id){return userRepository.findByIdUser(id);}
-    public List<User> findAllUsers(){return userRepository.findAllUsers();}
     public User findByEmailAndPassword(String email, String password){return userRepository.findByEmailAndPassword(email,password);}
     public User register(User user){
         return userRepository.save(user);}

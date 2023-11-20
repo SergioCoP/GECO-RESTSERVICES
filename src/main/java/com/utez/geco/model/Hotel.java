@@ -33,7 +33,7 @@ public class Hotel {
 
     //idUser
 
-    @ManyToMany(mappedBy = "hotels",cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "hotels",fetch = FetchType.EAGER)
     private List<User> users = new ArrayList<>();
 
     public Hotel() {

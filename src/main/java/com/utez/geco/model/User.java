@@ -57,12 +57,13 @@ public class User implements UserDetails{
             joinColumns = @JoinColumn(name="idUser"),
             inverseJoinColumns = @JoinColumn(name = "idRol")
     )
-    private Role idRol;
+    private Role idRol = new Role();
 
-    @OneToMany(mappedBy = "idUser",cascade = CascadeType.ALL,orphanRemoval = true)
+    @ManyToMany(mappedBy = "idUser",cascade = CascadeType.ALL)
+    @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
     private List<Room> rooms = new ArrayList<>();
 
-    @OneToMany(mappedBy = "idUser",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "idUser",orphanRemoval = true)
     private List<Incidence> incidences = new ArrayList<>();
 
     public User(String username, String hash, Collection<? extends GrantedAuthority> authorities) {

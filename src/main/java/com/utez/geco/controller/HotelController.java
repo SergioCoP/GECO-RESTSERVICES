@@ -1,8 +1,11 @@
 package com.utez.geco.controller;
 
 import com.google.gson.Gson;
+
+import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.Hotel;
 import com.utez.geco.service.Hotel.HotelServiceImpl;
+import com.utez.geco.service.User.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +33,8 @@ public class HotelController {
             "sysobject",".js"};
     @Autowired
     private HotelServiceImpl hotelService;
-
+    @Autowired
+    private UserServiceImpl userService;
     @GetMapping("/getAllHotels")
     @ResponseBody
     public ResponseEntity<?> getAllHotels(){
@@ -58,7 +62,7 @@ public class HotelController {
 
     @PostMapping("/saveHotel")
     @ResponseBody
-    public ResponseEntity<?> saveHotel(@RequestBody Hotel nhotel, @RequestParam("idUser")Long id){
+    public ResponseEntity<?> saveHotel(@RequestBody Hotel nhotel, @RequestParam("emailUser")String email){
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(nhotel.toString())){
             if(!new Gson().toJson(nhotel).equals("null")){
@@ -66,13 +70,19 @@ public class HotelController {
                     if(hotelService.register(nhotel)  != null){
                         Hotel sHot = hotelService.findByName(nhotel.getName());
                         if(sHot != null){
-                            if(hotelService.assignHotelUser(sHot.getIdHotel(),id) >= 1){
-                                map.put("msg","Register");
-                                return new ResponseEntity<>(map, HttpStatus.CREATED);
-                            }else{
-                                map.put("msg","NotRegister");
-                                return new ResponseEntity<>(map, HttpStatus.CONFLICT);
-                            }
+                                UsersDTO sUser = userService.findByEmail(email);
+                                if(sUser != null){
+                                    if(hotelService.assignHotelUser(sHot.getIdHotel(),sUser.getIdUser()) >= 1){
+                                        map.put("msg","Register");
+                                        return new ResponseEntity<>(map, HttpStatus.CREATED);
+                                    }else{
+                                        map.put("msg","NotRegister");
+                                        return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+                                    }
+                                }else{
+                                    map.put("msg","UserNotFound");
+                                    return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+                                }
                         }else{
                             map.put("msg","NotFound");
                             return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);

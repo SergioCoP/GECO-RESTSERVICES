@@ -23,7 +23,7 @@ public class Person {
     private String surname;
     @Column(name = "lastname",nullable = true,length = 60)
     private String lastname;
-    @Column(name = "turn",nullable = false,length = 60)
+    @Column(name = "turn",nullable = true,length = 60)
     private String turn;
 
 

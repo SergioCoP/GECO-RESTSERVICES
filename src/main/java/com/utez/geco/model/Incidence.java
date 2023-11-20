@@ -27,14 +27,14 @@ public class Incidence {
     private int status;
 
     //iduser
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinTable(name = "user_incidence",
     joinColumns = @JoinColumn(name = "idIncidence"),
     inverseJoinColumns = @JoinColumn(name = "idUser"))
     private User idUser;
     //idRoom
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    @JoinColumn(name="idRoom",nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="idRoom")
     @JoinTable(name = "room_incidence",
     joinColumns = @JoinColumn(name = "idIncidence"),
     inverseJoinColumns = @JoinColumn(name ="idRoom")

@@ -18,14 +18,14 @@ import java.util.UUID;
 @Service
 public class ImageService {
     private String uploadFile(File file, String fileName) throws IOException {
-        BlobId blobId = BlobId.of("your-bucket-name", fileName); // Replace with your bucker name
+        BlobId blobId = BlobId.of("geco-f04b1.appspot.com", fileName); // Replace with your bucker name
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
         InputStream inputStream = ImageService.class.getClassLoader().getResourceAsStream("firebase-private-key.json"); // change the file name with your one
         Credentials credentials = GoogleCredentials.fromStream(inputStream);
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));
 
-        String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/geco-f04b1/o/%s?alt=media";
+        String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/geco-f04b1.appspot.com/o/%s?alt=media";
         return String.format(DOWNLOAD_URL, URLEncoder.encode(fileName, StandardCharsets.UTF_8));
     }
     private File convertToFile(MultipartFile multipartFile, String fileName) throws IOException {

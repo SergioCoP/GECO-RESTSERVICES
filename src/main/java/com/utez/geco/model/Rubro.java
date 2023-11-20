@@ -21,7 +21,7 @@ public class Rubro {
     @Column(name = "description",length = 200)
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="idRoom",nullable = true)
     @JoinTable(
             name = "room_rubro",
