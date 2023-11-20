@@ -30,7 +30,7 @@ public interface IncidenceRepository extends JpaRepository<Incidence,Long> {
             "            join user u on ui.id_user = u.id_user\n" +
             "            join person p on u.id_person = p.id_person\n" +
             "            where r.identifier = :idRoom",nativeQuery = true)
-    IncidenceUser getIncidenceByRoomIdentifier(@Param("idRoom")String identifier);
+    List<IncidenceUser> getIncidenceByRoomIdentifier(@Param("idRoom")String identifier);
 
     @Query(value = "select i.id_inicidence as idIncidence,i.description,i.image,i.status,r.id_room as idRoom,r.identifier,concat(p.name, ' ',p.surname, ' ',p.lastname) as userName,u.id_user as idUser from incidence i\n" +
             "            join room_incidence ri on i.id_inicidence = ri.id_incidence\n" +
@@ -39,7 +39,7 @@ public interface IncidenceRepository extends JpaRepository<Incidence,Long> {
             "            join user u on ui.id_user = u.id_user\n" +
             "            join person p on u.id_person = p.id_person\n" +
             "            where r.id_room = :idRoom",nativeQuery = true)
-    IncidenceUser getIncidenceByRoomId(@Param("idRoom")Long idRoom);
+    List<IncidenceUser> getIncidenceByRoomId(@Param("idRoom")Long idRoom);
 
     @Query(value = "select i.id_inicidence as idIncidence,i.description,i.image,i.status,r.id_room as idRoom,r.identifier,concat(p.name, ' ',p.surname, ' ',p.lastname) as userName,u.id_user as idUser from incidence i\n" +
             "            join room_incidence ri on i.id_inicidence = ri.id_incidence\n" +

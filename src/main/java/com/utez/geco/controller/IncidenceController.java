@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -52,8 +53,8 @@ public class IncidenceController {
     public ResponseEntity<?> getIncidenceByRoomIdentifer(@RequestParam("roomIdentifier")String roomIdentifier){
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(roomIdentifier)){
-            IncidenceUser incidenceUser = incidenceService.findByRoomIndentifier(roomIdentifier);
-            if(incidenceUser != null){
+            List<IncidenceUser> incidenceUser = incidenceService.findByRoomIndentifier(roomIdentifier);
+            if(incidenceUser.size() >= 1){
                 map.put("msg","OK");
                 map.put("data",incidenceUser);
                 return new ResponseEntity<>(map, HttpStatus.OK);
@@ -72,8 +73,8 @@ public class IncidenceController {
     @ResponseBody
     public ResponseEntity<?> getIncidenceByRoomId(@RequestParam("idRoom")Long idRoom){
         Map<String, Object> map = new HashMap<>();
-        IncidenceUser incidenceUser = incidenceService.findByIdRoom(idRoom);
-        if(incidenceUser != null){
+        List<IncidenceUser> incidenceUser = incidenceService.findByIdRoom(idRoom);
+        if(incidenceUser.size() >= 1){
             map.put("msg","OK");
             map.put("data",incidenceUser);
             return new ResponseEntity<>(map, HttpStatus.OK);

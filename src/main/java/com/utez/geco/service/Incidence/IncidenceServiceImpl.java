@@ -19,9 +19,9 @@ public class IncidenceServiceImpl extends Incidence {
 
     public List<IncidenceUser> findAll(){return incidenceRepository.getIncidences();}
 
-    public IncidenceUser findByIdRoom(Long id){return incidenceRepository.getIncidenceByRoomId(id);}
+    public List<IncidenceUser> findByIdRoom(Long id){return incidenceRepository.getIncidenceByRoomId(id);}
 
-    public IncidenceUser findByRoomIndentifier(String identifier){return incidenceRepository.getIncidenceByRoomIdentifier(identifier);}
+    public List<IncidenceUser> findByRoomIndentifier(String identifier){return incidenceRepository.getIncidenceByRoomIdentifier(identifier);}
     public IncidenceUser findByidIncidence(Long idIncidence){return incidenceRepository.getIncidenceByIdIncidence(idIncidence);}
 
     public Incidence register(Incidence incidence){
