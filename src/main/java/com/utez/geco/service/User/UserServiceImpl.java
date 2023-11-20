@@ -1,14 +1,11 @@
 package com.utez.geco.service.User;
 
+import com.utez.geco.DTO.User.UsersByRol;
 import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.User;
 import com.utez.geco.repository.User.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +23,7 @@ public class UserServiceImpl {
     public UsersDTO findById(Long id){return userRepository.findByIdUser(id);}
     public List<UsersDTO> findAllUsers(){return userRepository.findAllUsers();}
 
+    public List<UsersByRol> findUsersByRol(String rolName){return  userRepository.findUsersByRol(rolName);}
     public User findByEmailAndPassword(String email, String password){return userRepository.findByEmailAndPassword(email,password);}
     public User register(User user){
         return userRepository.save(user);}

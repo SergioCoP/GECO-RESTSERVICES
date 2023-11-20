@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -65,7 +63,6 @@ public class UserController {
     }
 
 
-    @PreAuthorize("hasRole('ROLE_GERENTE')")
     @GetMapping("/getUserByEmail")
     @ResponseBody
     public ResponseEntity<?> findUserByEmail(@RequestParam(name = "email") String email) {
@@ -101,6 +98,15 @@ public class UserController {
             return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/getUsersByRol")
+    @ResponseBody
+    public ResponseEntity<?> findUsersByRol(@RequestParam(name = "rolName") String rolName) {
+        Map<String, Object> map = new HashMap<>();
+            map.put("msg","OK");
+            map.put("data",userService.findUsersByRol(rolName));
+            return new ResponseEntity<>(map, HttpStatus.OK);
+    }
     @PostMapping ("/login")
     @ResponseBody
     public ResponseEntity<?> findByEmailAndPassword(@RequestParam(name = "email")String email,@RequestParam(name = "password") String password){
@@ -122,7 +128,7 @@ public class UserController {
 
     }
 
-    @PreAuthorize("hasRole('ROLE_GERENTE')")
+
     @GetMapping("/getUsers")
     @ResponseBody
     public ResponseEntity<?> getAllUsers(){
