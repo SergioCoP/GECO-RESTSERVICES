@@ -1,9 +1,7 @@
 package com.utez.geco.repository.Hotel;
 
-<<<<<<< Updated upstream
-=======
+
 import com.utez.geco.DTO.User.UserHotel;
->>>>>>> Stashed changes
 import com.utez.geco.model.Hotel;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;

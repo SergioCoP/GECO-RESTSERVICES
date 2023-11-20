@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class UserServiceImpl implements IUserService{
+public class UserServiceImpl {
     @Autowired
     private UserRepository userRepository;
 
@@ -31,13 +31,5 @@ public class UserServiceImpl implements IUserService{
         return userRepository.save(user);}
 
 
-    @Override
-    public UserDetailsService userDetailsService(){
-        return new UserDetailsService() {
-            @Override
-            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                return userRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("User not found")) ;
-            }
-        };
-    }
+
 }

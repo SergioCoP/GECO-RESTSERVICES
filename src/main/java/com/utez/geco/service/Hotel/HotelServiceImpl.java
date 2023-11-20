@@ -1,9 +1,7 @@
 package com.utez.geco.service.Hotel;
 
-<<<<<<< Updated upstream
-=======
+
 import com.utez.geco.DTO.User.UserHotel;
->>>>>>> Stashed changes
 import com.utez.geco.model.Hotel;
 import com.utez.geco.repository.Hotel.HotelRepository;
 import jakarta.transaction.Transactional;
