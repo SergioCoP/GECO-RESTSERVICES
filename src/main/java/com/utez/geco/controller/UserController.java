@@ -103,9 +103,14 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<?> findUsersByRol(@RequestParam(name = "rolName") String rolName) {
         Map<String, Object> map = new HashMap<>();
+        if(!containsMaliciusWord(rolName)){
             map.put("msg","OK");
             map.put("data",userService.findUsersByRol(rolName));
             return new ResponseEntity<>(map, HttpStatus.OK);
+        }else{
+            map.put("msg","BadWord");
+            return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+        }
     }
     @PostMapping ("/login")
     @ResponseBody
