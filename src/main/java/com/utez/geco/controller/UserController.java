@@ -1,8 +1,11 @@
 package com.utez.geco.controller;
 
 
+import com.utez.geco.DTO.SigninRequest;
+import com.utez.geco.DTO.SignupRequest;
 import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.User;
+import com.utez.geco.service.User.UserAuthenticationImpl;
 import com.utez.geco.service.User.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -38,20 +42,21 @@ public class UserController {
     String msg = "";
     @Autowired
     private UserServiceImpl userService;
-
+    private final UserAuthenticationImpl authenticationService;
+    private final PasswordEncoder passwordEncoder;
     @PostMapping("/registerUser")
     @ResponseBody
-    public ResponseEntity<?> registerUser(@RequestBody User user){
+    public ResponseEntity<?> registerUser(@RequestBody SignupRequest newUser){
         Map<String, Object> map = new HashMap<>();
-        if(!containsMaliciusWord(user.toString())){
-            if(userService.findByEmail(user.getEmail()) != null){
-                User nUser = userService.register(user);
+        if(!containsMaliciusWord(newUser.toString())){
+            if(userService.findByEmail(newUser.getEmail()).isPresent()){
+                User nUser = authenticationService.signup(newUser);
                 if(nUser != null){
                     map.put("msg","Register");
                     map.put("data",nUser);
                     return new ResponseEntity<>(map, HttpStatus.CREATED);
                 }else{
-                    map.put("msg", "NotExist");
+                    map.put("msg", "NotRegister");
                     return new ResponseEntity<>(map, HttpStatus.CONFLICT);
                 }
             }else{
@@ -71,11 +76,10 @@ public class UserController {
     public ResponseEntity<?> findUserByEmail(@RequestParam(name = "email") String email) {
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(email)){
-
-            UsersDTO nUser = userService.findByEmail(email);
-                if(nUser != null){
+            Optional<User> nUser = userService.findByEmail(email);
+                if(nUser.isPresent()){
                     map.put("msg", "OK");
-                    map.put("data",nUser);
+                    map.put("data",nUser.get());
                     return new ResponseEntity<>(map, HttpStatus.OK);
                 }else{
                     map.put("msg", "FAIL");
@@ -105,16 +109,24 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<?> findByEmailAndPassword(@RequestParam(name = "email")String email,@RequestParam(name = "password") String password){
         Map<String, Object> map = new HashMap<>();
+        SigninRequest signinRequest = new SigninRequest();
         if(!containsMaliciusWord(email) || containsMaliciusWord(password)){
-            User nUser = userService.findByEmailAndPassword(email,password);
-            if(nUser != null){
-                map.put("msg","Loged");
+            Optional<User> nUser = userService.findByEmail(email);
+            //User nUser = userService.findByEmailAndPassword(email,password);
+            if(nUser.isPresent()){
+                if(passwordEncoder.matches(password,nUser.get().getPassword())){
+                    signinRequest.setEmail(email);
+                    signinRequest.setPassword(password);
+                    map.put("msg","Loged");
+                    map.put("data",authenticationService.signin(signinRequest));
+                }else{
+                    map.put("msg","EmailPassFail");
+                }
                 return new ResponseEntity<>(map, HttpStatus.OK);
             }else{
                 map.put("msg","NotExist");
                 return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
             }
-
         }else{
             map.put("msg","BadWord");
             return new ResponseEntity<>(map, HttpStatus.CONFLICT);

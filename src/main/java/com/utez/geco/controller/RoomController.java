@@ -6,6 +6,7 @@ import com.utez.geco.DTO.Room.RoomsDTO;
 import com.utez.geco.DTO.Room.RoomsWithUser;
 import com.utez.geco.model.Room;
 import com.utez.geco.service.Room.RoomServiceImpl;
+import com.utez.geco.service.User.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,8 @@ public class RoomController {
 
     @Autowired
     private RoomServiceImpl roomService;
-
+    @Autowired
+    private  UserServiceImpl userService;
     @GetMapping("/getAllRooms")
     @ResponseBody
     public ResponseEntity<?> getAllRooms(){
@@ -65,7 +67,6 @@ public class RoomController {
     @GetMapping("/getRoomsWithUser")
     @ResponseBody
     public ResponseEntity<?> getRoomsWithUser(){
-        //new Gson().toJson(roomRepository.validateRomUser(idUser,idRoom))
         List<RoomsWithUser> roUser = roomService.getRoomsWithUser();
         Map<String, Object> map = new HashMap<>();
         if(roUser.size() >=1){
@@ -126,13 +127,18 @@ public class RoomController {
     public ResponseEntity<?> updateRoom(@RequestBody Room uRoom){
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(uRoom.toString())){
-            Room room =roomService.update(uRoom);
-            if(room != null){
-                map.put("msg","Update");
-                return new ResponseEntity<>(map,HttpStatus.OK);
+            if(roomService.findById(uRoom.getIdRoom()) != null){
+                Room room =roomService.update(uRoom);
+                if(room != null){
+                    map.put("msg","Update");
+                    return new ResponseEntity<>(map,HttpStatus.OK);
+                }else{
+                    map.put("msg","NotUpdate");
+                    return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                }
             }else{
-                map.put("msg","NotUpdate");
-                return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                map.put("msg","NotFound");
+                return new ResponseEntity<>(map,HttpStatus.NOT_FOUND);
             }
         }else{
             map.put("msg","BadWord");
@@ -149,8 +155,8 @@ public class RoomController {
             map.put("msg","Delete");
             return new ResponseEntity<>(map,HttpStatus.OK);
         }else{
-            map.put("msg","NotDelete");
-            return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+            map.put("msg","NotFound");
+            return new ResponseEntity<>(map,HttpStatus.NOT_FOUND);
         }
     }
 
@@ -158,16 +164,33 @@ public class RoomController {
     @ResponseBody
     public ResponseEntity<?> assignUserToRoom(@RequestParam("idUser") Long idUser,@RequestParam("idRoom") Long idRoom){
         Map<String, Object> map = new HashMap<>();
-        map.put("msg",roomService.assignUserToRoom(idUser,idRoom));
-        return new ResponseEntity<>(map,HttpStatus.OK);
+        if(roomService.findById(idRoom) != null){
+            if(userService.findById(idUser) != null){
+                map.put("msg",roomService.assignUserToRoom(idUser,idRoom));
+                return new ResponseEntity<>(map,HttpStatus.OK);
+            }else{
+                map.put("msg","UserNotFound");
+                return new ResponseEntity<>(map,HttpStatus.NOT_FOUND);
+            }
+        }else{
+            map.put("msg","RoomNotFound");
+            return new ResponseEntity<>(map,HttpStatus.NOT_FOUND);
+        }
+
     }
 
     @PutMapping("/reviewRoom")
     @ResponseBody
     public ResponseEntity<?> reviewRoom(@RequestParam("status") int status,@RequestParam("idRoom") Long idRoom){
         Map<String, Object> map = new HashMap<>();
-        map.put("msg",roomService.reviewRoom(status,idRoom));
-        return new ResponseEntity<>(map,HttpStatus.OK);
+        if(roomService.findById(idRoom) != null){
+            map.put("msg",roomService.reviewRoom(status,idRoom));
+            return new ResponseEntity<>(map,HttpStatus.OK);
+        }else{
+            map.put("msg","RoomNotFound");
+            return new ResponseEntity<>(map,HttpStatus.NOT_FOUND);
+        }
+
     }
 
     private boolean containsMaliciusWord(String texto) {

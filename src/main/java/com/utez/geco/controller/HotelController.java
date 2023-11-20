@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.Hotel;
+import com.utez.geco.model.User;
 import com.utez.geco.service.Hotel.HotelServiceImpl;
 import com.utez.geco.service.User.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/hotel")
@@ -70,9 +72,9 @@ public class HotelController {
                     if(hotelService.register(nhotel)  != null){
                         Hotel sHot = hotelService.findByName(nhotel.getName());
                         if(sHot != null){
-                                UsersDTO sUser = userService.findByEmail(email);
-                                if(sUser != null){
-                                    if(hotelService.assignHotelUser(sHot.getIdHotel(),sUser.getIdUser()) >= 1){
+                                Optional<User> sUser = userService.findByEmail(email);
+                                if(sUser.isPresent()){
+                                    if(hotelService.assignHotelUser(sHot.getIdHotel(),sUser.get().getIdUser()) >= 1){
                                         map.put("msg","Register");
                                         return new ResponseEntity<>(map, HttpStatus.CREATED);
                                     }else{
@@ -120,7 +122,6 @@ public class HotelController {
                          map.put("msg", "NotUpdate");
                          return new ResponseEntity<>(map, HttpStatus.CONFLICT);
                      }
-                    //                    msg = hotelService.updateAll(nhotel) != null ? "Update" : "NotUpdated";
                 }else{
                     map.put("msg", "NotFound");
                     return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);

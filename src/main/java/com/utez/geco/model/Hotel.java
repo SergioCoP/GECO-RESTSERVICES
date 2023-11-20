@@ -19,7 +19,6 @@ public class Hotel {
     @Column(name = "idHotel",nullable = false,unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idHotel;
-
     @Column(name = "name",length = 50)
     private String name;
     @Column(name = "colorFont",length = 20)

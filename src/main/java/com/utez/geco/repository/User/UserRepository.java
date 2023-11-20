@@ -22,7 +22,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query(value = "select u.id_user as idUser,u.email,concat(p.name, ' ', p.surname, ' ', p.lastname) as userName,p.turn from user u " +
                       "join person p on p.id_person = u.id_person where u.email = :email",nativeQuery = true)
-    UsersDTO findByEmail(@Param("email") String email);
+    Optional<User> findByEmail(@Param("email") String email);
 
     @Query(value = "select u.id_user as idUser,u.email,concat(p.name, ' ', p.surname, ' ', p.lastname) as userName,p.turn from user u" +
             "join person p on p.id_person = u.id_person where u.id_user = :idUser",nativeQuery = true)

@@ -83,14 +83,20 @@ public class RubroController {
     public ResponseEntity<?> updateRubro(@RequestBody Rubro rubro){
         Map<String, Object> map = new HashMap<>();
         if(containsMaliciusWord(rubro.toString())){
-            Rubro nrub = rubroService.update(rubro);
-            if(nrub != null){
-                map.put("msg","Update");
-                return new ResponseEntity<>(map,HttpStatus.CREATED);
+            if(rubroService.findById(rubro.getIdRubro()) != null){
+                Rubro nrub = rubroService.update(rubro);
+                if(nrub != null){
+                    map.put("msg","Update");
+                    return new ResponseEntity<>(map,HttpStatus.CREATED);
+                }else{
+                    map.put("msg","NotUpdate");
+                    return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                }
             }else{
-                map.put("msg","NotUpdate");
-                return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                map.put("msg","NotFound");
+                return new ResponseEntity<>(map,HttpStatus.NOT_FOUND);
             }
+
         }else{
             map.put("msg","BadWord");
             return new ResponseEntity<>(map,HttpStatus.CONFLICT);
