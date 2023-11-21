@@ -1,5 +1,6 @@
 package com.utez.geco.repository.Rubro;
 
+import com.utez.geco.DTO.Rubro.RubroGetDTO;
 import com.utez.geco.model.Rubro;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +19,6 @@ public interface RubroRepository extends JpaRepository<Rubro,Long> {
     int delete(@Param("idRubro") Long id);
 
 
+    @Query(value = "select id_rubro as idRubro, description as name from rubro where description like %:rubro%",nativeQuery = true)
+    RubroGetDTO findByName(@Param("rubro")String rubro);
 }

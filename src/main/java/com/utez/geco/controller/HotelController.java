@@ -2,6 +2,8 @@ package com.utez.geco.controller;
 
 import com.google.gson.Gson;
 
+import com.utez.geco.DTO.Hotel.HotelGetDTO;
+import com.utez.geco.DTO.Hotel.HotelSaveDTO;
 import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.Hotel;
 import com.utez.geco.service.Hotel.HotelServiceImpl;
@@ -49,7 +51,7 @@ public class HotelController {
     @ResponseBody
     public ResponseEntity<?> getHotelById(@RequestParam("idHotel")Long id){
         Map<String, Object> map = new HashMap<>();
-        Hotel hotel = hotelService.findById(id);
+        HotelGetDTO hotel = hotelService.findById(id);
         if(hotel != null){
             map.put("msg","OK");
             map.put("data",hotel);
@@ -62,27 +64,30 @@ public class HotelController {
 
     @PostMapping("/saveHotel")
     @ResponseBody
-    public ResponseEntity<?> saveHotel(@RequestBody Hotel nhotel, @RequestParam("emailUser")String email){
+    public ResponseEntity<?> saveHotel(@RequestBody HotelSaveDTO nhotel, @RequestParam("emailUser")String email){
         Map<String, Object> map = new HashMap<>();
+
         if(!containsMaliciusWord(nhotel.toString())){
-            if(!new Gson().toJson(nhotel).equals("null")){
-                if(new Gson().toJson(hotelService.findByName(nhotel.getName())).equals("null") ){
-                    if(hotelService.register(nhotel)  != null){
+            if(!new Gson().toJson(nhotel).equals("{}")){
+                if(hotelService.findByName(nhotel.getName()) == null){
+                    Hotel nHotel = new Hotel();
+                    nHotel.setName(nhotel.getName());
+                    if(hotelService.register(nHotel)  != null){
                         Hotel sHot = hotelService.findByName(nhotel.getName());
-                        if(sHot != null){
-                                UsersDTO sUser = userService.findByEmail(email);
-                                if(sUser != null){
-                                    if(hotelService.assignHotelUser(sHot.getIdHotel(),sUser.getIdUser()) >= 1){
-                                        map.put("msg","Register");
-                                        return new ResponseEntity<>(map, HttpStatus.CREATED);
-                                    }else{
-                                        map.put("msg","NotRegister");
-                                        return new ResponseEntity<>(map, HttpStatus.CONFLICT);
-                                    }
+                        if(!new Gson().toJson(sHot).equals("null")){
+                            UsersDTO sUser = userService.findByEmail(email);
+                            if(sUser != null){
+                                if(hotelService.assignHotelUser(sUser.getIdUser(), sHot.getIdHotel()) >= 1){
+                                    map.put("msg","Register");
+                                    return new ResponseEntity<>(map, HttpStatus.CREATED);
                                 }else{
-                                    map.put("msg","UserNotFound");
+                                    map.put("msg","NotRegister");
                                     return new ResponseEntity<>(map, HttpStatus.CONFLICT);
                                 }
+                            }else{
+                                map.put("msg","UserNotFound");
+                                return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+                            }
                         }else{
                             map.put("msg","NotFound");
                             return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);

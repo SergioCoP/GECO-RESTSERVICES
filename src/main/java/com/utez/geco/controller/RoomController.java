@@ -126,12 +126,17 @@ public class RoomController {
     public ResponseEntity<?> updateRoom(@RequestBody Room uRoom){
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(uRoom.toString())){
-            Room room =roomService.update(uRoom);
-            if(room != null){
-                map.put("msg","Update");
-                return new ResponseEntity<>(map,HttpStatus.OK);
+            if(roomService.findById(uRoom.getIdRoom()) != null){
+                Room room =roomService.update(uRoom);
+                if(room != null){
+                    map.put("msg","Update");
+                    return new ResponseEntity<>(map,HttpStatus.OK);
+                }else{
+                    map.put("msg","NotUpdate");
+                    return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                }
             }else{
-                map.put("msg","NotUpdate");
+                map.put("msg","NotExist");
                 return new ResponseEntity<>(map,HttpStatus.CONFLICT);
             }
         }else{

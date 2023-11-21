@@ -1,6 +1,7 @@
 package com.utez.geco.controller;
 
 
+import com.utez.geco.DTO.Rubro.RubroGetDTO;
 import com.utez.geco.model.Rubro;
 import com.utez.geco.service.Rubro.RubroServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,18 +58,38 @@ public class RubroController {
         }
     }
 
+    @GetMapping("/getRubroByName")
+    @ResponseBody
+    public ResponseEntity<?> getRubroByName(@RequestParam("nameRubro") String name){
+        Map<String, Object> map = new HashMap<>();
+        RubroGetDTO rubro = rubroService.findByName(name);
+        if(rubro != null){
+            map.put("msg","OK");
+            map.put("data",rubro);
+            return new ResponseEntity<>(map,HttpStatus.OK);
+        }else{
+            map.put("msg","NotFound");
+            return new ResponseEntity<>(map,HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PostMapping("/saveRubro")
     @ResponseBody
     public ResponseEntity<?> createRubro(@RequestBody Rubro rubro){
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(rubro.toString())){
-            Rubro nrub = rubroService.register(rubro);
-            if(rubro != null){
-                map.put("msg","Register");
-                map.put("data",nrub);
-                return new ResponseEntity<>(map,HttpStatus.CREATED);
+            if(rubroService.findByName(rubro.getDescription()) == null){
+                Rubro nrub = rubroService.register(rubro);
+                if(rubro != null){
+                    map.put("msg","Register");
+                    map.put("data",nrub);
+                    return new ResponseEntity<>(map,HttpStatus.CREATED);
+                }else{
+                    map.put("msg","NotRegister");
+                    return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                }
             }else{
-                map.put("msg","NotRegister");
+                map.put("msg","Exist");
                 return new ResponseEntity<>(map,HttpStatus.CONFLICT);
             }
         }else{
@@ -83,12 +104,17 @@ public class RubroController {
     public ResponseEntity<?> updateRubro(@RequestBody Rubro rubro){
         Map<String, Object> map = new HashMap<>();
         if(containsMaliciusWord(rubro.toString())){
-            Rubro nrub = rubroService.update(rubro);
-            if(nrub != null){
-                map.put("msg","Update");
-                return new ResponseEntity<>(map,HttpStatus.CREATED);
+            if(rubroService.findByName(rubro.getDescription()) == null){
+                Rubro nrub = rubroService.update(rubro);
+                if(nrub != null){
+                    map.put("msg","Update");
+                    return new ResponseEntity<>(map,HttpStatus.CREATED);
+                }else{
+                    map.put("msg","NotUpdate");
+                    return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                }
             }else{
-                map.put("msg","NotUpdate");
+                map.put("msg","Exist");
                 return new ResponseEntity<>(map,HttpStatus.CONFLICT);
             }
         }else{

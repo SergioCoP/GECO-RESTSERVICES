@@ -85,6 +85,7 @@ public class UserController {
         }
 
     }
+
     @GetMapping("/getUserById")
     @ResponseBody
     public ResponseEntity<?> findUserById(@RequestParam(name = "idUser") Long id) {
@@ -113,6 +114,7 @@ public class UserController {
             return new ResponseEntity<>(map, HttpStatus.CONFLICT);
         }
     }
+
     @PostMapping ("/login")
     @ResponseBody
     public ResponseEntity<?> findByEmailAndPassword(@RequestParam(name = "email")String email,@RequestParam(name = "password") String password){

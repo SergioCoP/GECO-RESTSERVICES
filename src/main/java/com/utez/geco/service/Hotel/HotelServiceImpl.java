@@ -1,6 +1,7 @@
 package com.utez.geco.service.Hotel;
 
 
+import com.utez.geco.DTO.Hotel.HotelGetDTO;
 import com.utez.geco.DTO.User.UserHotel;
 import com.utez.geco.model.Hotel;
 import com.utez.geco.repository.Hotel.HotelRepository;
@@ -17,8 +18,8 @@ public class HotelServiceImpl extends Hotel {
     @Autowired
     private HotelRepository hotelRepository;
 
-    public List<Hotel> findAll(){return hotelRepository.findAll();}
-    public Hotel findById(Long id){return hotelRepository.findByIdHotel(id);}
+    public List<HotelGetDTO> findAll(){return hotelRepository.findAllHotels();}
+    public HotelGetDTO findById(Long id){return hotelRepository.findByIdHotel(id);}
 
     public Hotel findByName(String name){return hotelRepository.findByName(name);}
     public Hotel register(Hotel hotel){return hotelRepository.save(hotel);}

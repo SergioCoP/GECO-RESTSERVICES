@@ -1,5 +1,6 @@
 package com.utez.geco.service.Rubro;
 
+import com.utez.geco.DTO.Rubro.RubroGetDTO;
 import com.utez.geco.model.Rubro;
 import com.utez.geco.repository.Rubro.RubroRepository;
 import jakarta.transaction.Transactional;
@@ -19,4 +20,5 @@ public class RubroServiceImpl {
     public Rubro register(Rubro rubro){return rubroRepository.save(rubro);}
     public Rubro update(Rubro rubro){return rubroRepository.save(rubro);}
     public void delete(Long id){rubroRepository.deleteById(id);}
+    public RubroGetDTO findByName(String name){return rubroRepository.findByName(name);}
 }
