@@ -1,6 +1,7 @@
 package com.utez.geco.controller;
 
 
+import com.google.gson.Gson;
 import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.User;
 import com.utez.geco.service.User.UserServiceImpl;
@@ -42,7 +43,7 @@ public class UserController {
     public ResponseEntity<?> registerUser(@RequestBody User user){
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(user.toString())){
-            if(userService.findByEmail(user.getEmail()) != null){
+            if(new Gson().toJson(userService.findByEmail(user.getEmail())).equals("null")){
                 User nUser = userService.register(user);
                 if(nUser != null){
                     map.put("msg","Register");
@@ -70,7 +71,7 @@ public class UserController {
         if(!containsMaliciusWord(email)){
 
             UsersDTO nUser = userService.findByEmail(email);
-                if(nUser != null){
+                if(!new Gson().toJson(nUser).equals("null")){
                     map.put("msg", "OK");
                     map.put("data",nUser);
                     return new ResponseEntity<>(map, HttpStatus.OK);
@@ -118,7 +119,7 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(email) || containsMaliciusWord(password)){
             User nUser = userService.findByEmailAndPassword(email,password);
-            if(nUser != null){
+            if(!new Gson().toJson(nUser).equals("null")){
                 map.put("msg","Loged");
                 return new ResponseEntity<>(map, HttpStatus.OK);
             }else{
