@@ -125,20 +125,22 @@ public class IncidenceController {
                 if(incidenceService.assignIncidenceUser(idUser,sIn.getIdIncidence()) >= 1){
                     if(incidenceService.assignIncidenceRoom(idRoom,sIn.getIdIncidence()) >= 1){
                         map.put("msg","Register");
+                        return new ResponseEntity<>(map, HttpStatus.OK);
                     }else{
                         map.put("msg","RoomNotAssigned");
+                        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
                     }
                 }else{
                     map.put("msg","IncidenceNotAssigned");
+                    return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
                 }
-            }else{
-                map.put("msg","NotRegister");
+            }else {
+                map.put("msg", "NotRegister");
+                return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
             }
-
-            return new ResponseEntity<>(map, HttpStatus.OK);
         }else{
             map.put("msg","BadWord");
-            return new ResponseEntity<>(map, HttpStatus.OK);
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
     }
 

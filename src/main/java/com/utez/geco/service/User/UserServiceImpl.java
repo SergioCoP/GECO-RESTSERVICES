@@ -1,5 +1,6 @@
 package com.utez.geco.service.User;
 
+import com.utez.geco.DTO.User.AllUsersDTO;
 import com.utez.geco.DTO.User.UsersByRol;
 import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.User;
@@ -21,7 +22,7 @@ public class UserServiceImpl {
 
     public UsersDTO findByEmail(String email){return userRepository.findByEmail(email);}
     public UsersDTO findById(Long id){return userRepository.findByIdUser(id);}
-    public List<UsersDTO> findAllUsers(){return userRepository.findAllUsers();}
+    public List<AllUsersDTO> findAllUsers(){return userRepository.findAllUsers();}
 
     public List<UsersByRol> findUsersByRol(String rolName){return  userRepository.findUsersByRol(rolName);}
     public User findByEmailAndPassword(String email, String password){return userRepository.findByEmailAndPassword(email,password);}

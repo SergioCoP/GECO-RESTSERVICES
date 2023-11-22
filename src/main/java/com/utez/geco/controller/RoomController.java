@@ -113,11 +113,11 @@ public class RoomController {
                 return new ResponseEntity<>(map,HttpStatus.OK);
             }else{
                 map.put("msg","NotRegister");
-                return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
             }
         }else{
             map.put("msg","BadWord");
-            return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -133,15 +133,15 @@ public class RoomController {
                     return new ResponseEntity<>(map,HttpStatus.OK);
                 }else{
                     map.put("msg","NotUpdate");
-                    return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                    return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
                 }
             }else{
                 map.put("msg","NotExist");
-                return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
             }
         }else{
             map.put("msg","BadWord");
-            return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -155,7 +155,7 @@ public class RoomController {
             return new ResponseEntity<>(map,HttpStatus.OK);
         }else{
             map.put("msg","NotDelete");
-            return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
         }
     }
 

@@ -7,5 +7,4 @@ public interface AllUsersDTO {
     Long getIdRol();
     String getUserRol();
     Long getIdHotel();
-
 }

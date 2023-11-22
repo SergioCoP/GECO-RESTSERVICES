@@ -2,6 +2,7 @@ package com.utez.geco.controller;
 
 
 import com.google.gson.Gson;
+import com.utez.geco.DTO.User.AllUsersDTO;
 import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.User;
 import com.utez.geco.service.User.UserServiceImpl;
@@ -43,7 +44,7 @@ public class UserController {
     public ResponseEntity<?> registerUser(@RequestBody User user){
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(user.toString())){
-            if(new Gson().toJson(userService.findByEmail(user.getEmail())).equals("null")){
+            if(userService.findByEmail(user.getEmail()) == null){
                 User nUser = userService.register(user);
                 if(nUser != null){
                     map.put("msg","Register");
@@ -51,11 +52,11 @@ public class UserController {
                     return new ResponseEntity<>(map, HttpStatus.CREATED);
                 }else{
                     map.put("msg", "NotExist");
-                    return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+                    return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
                 }
             }else{
                 map.put("msg", "ExistEmail");
-                return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+                return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
             }
         }else{
             map.put("msg","BadWord");
@@ -71,7 +72,8 @@ public class UserController {
         if(!containsMaliciusWord(email)){
 
             UsersDTO nUser = userService.findByEmail(email);
-                if(!new Gson().toJson(nUser).equals("null")){
+            System.out.println(nUser.getEmail());
+                if(nUser != null){
                     map.put("msg", "OK");
                     map.put("data",nUser);
                     return new ResponseEntity<>(map, HttpStatus.OK);
@@ -111,7 +113,7 @@ public class UserController {
             return new ResponseEntity<>(map, HttpStatus.OK);
         }else{
             map.put("msg","BadWord");
-            return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -128,12 +130,10 @@ public class UserController {
                 map.put("msg","NotExist");
                 return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
             }
-
         }else{
             map.put("msg","BadWord");
-            return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
-
     }
 
 
@@ -141,7 +141,7 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<?> getAllUsers(){
         Map<String, Object> map = new HashMap<>();
-        List<User> users = userService.findAll();
+        List<AllUsersDTO> users = userService.findAllUsers();
         map.put("msg","OK");
         map.put("data",users);
         return new ResponseEntity<>(map,HttpStatus.OK);

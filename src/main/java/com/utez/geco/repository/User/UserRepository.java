@@ -1,5 +1,6 @@
 package com.utez.geco.repository.User;
 
+import com.utez.geco.DTO.User.AllUsersDTO;
 import com.utez.geco.DTO.User.UsersByRol;
 import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.User;
@@ -25,12 +26,20 @@ public interface UserRepository extends JpaRepository<User, String> {
                       "join person p on p.id_person = u.id_person where u.email = :email",nativeQuery = true)
     UsersDTO findByEmail(@Param("email") String email);
 
-    @Query(value = "select u.id_user as idUser,u.email,concat(p.name, ' ', p.surname, ' ', p.lastname) as userName,p.turn from user u" +
+    @Query(value = "select u.id_user as idUser,u.email,\n" +
+            "concat(p.name, ' ', p.surname, ' ', p.lastname) as userName,\n" +
+            "p.turn from user u\n" +
             "join person p on p.id_person = u.id_person where u.id_user = :idUser",nativeQuery = true)
     UsersDTO findByIdUser(@Param("idUser") Long idUser);
-    @Query(value = "select u.id_user as idUser,u.email,concat(p.name, ' ', p.surname, ' ', p.lastname) as userName,p.turn from user u" +
-            "join person p on p.id_person = u.id_person;;", nativeQuery = true)
-    List<UsersDTO> findAllUsers();
+    @Query(value = "select u.id_user as idUser,u.email as userEmail,\n" +
+            "       concat(p.name, ' ', p.surname, ' ', p.lastname) as userName,\n" +
+            "       p.turn,r.id_rol as idRol, r.name as userRol,h.id_hotel as idHotel from user u\n" +
+            "join user_rol ur on u.id_user = ur.id_user\n" +
+            "left join user_hotel uh on u.id_user = uh.id_user\n" +
+            "left join hotel h on uh.id_hotel = h.id_hotel\n" +
+            "join rol r on ur.id_rol = r.id_rol\n" +
+            "join person p on p.id_person = u.id_person;", nativeQuery = true)
+    List<AllUsersDTO> findAllUsers();
 
     @Query(value = "select u.id_user as idUser,CONCAT(p.name,' ',p.surname, ' ',p.lastname) as userName,u.email,p.turn,r.name as rolName from user u\n" +
             "join user_rol ur on u.id_user = ur.id_user\n" +

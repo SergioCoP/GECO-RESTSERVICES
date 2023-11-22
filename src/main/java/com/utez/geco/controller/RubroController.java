@@ -86,15 +86,15 @@ public class RubroController {
                     return new ResponseEntity<>(map,HttpStatus.CREATED);
                 }else{
                     map.put("msg","NotRegister");
-                    return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                    return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
                 }
             }else{
                 map.put("msg","Exist");
-                return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
             }
         }else{
             map.put("msg","BadWord");
-            return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
         }
 
     }
@@ -111,15 +111,15 @@ public class RubroController {
                     return new ResponseEntity<>(map,HttpStatus.CREATED);
                 }else{
                     map.put("msg","NotUpdate");
-                    return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                    return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
                 }
             }else{
                 map.put("msg","Exist");
-                return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+                return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
             }
         }else{
             map.put("msg","BadWord");
-            return new ResponseEntity<>(map,HttpStatus.CONFLICT);
+            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
         }
     }
 
