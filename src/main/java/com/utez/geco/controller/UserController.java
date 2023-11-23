@@ -2,21 +2,26 @@ package com.utez.geco.controller;
 
 
 import com.google.gson.Gson;
+import com.utez.geco.DTO.SigninRequest;
+import com.utez.geco.DTO.SignupRequest;
 import com.utez.geco.DTO.User.AllUsersDTO;
 import com.utez.geco.DTO.User.UserById;
 import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.User;
+import com.utez.geco.service.User.UserAuthenticationImpl;
 import com.utez.geco.service.User.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -39,14 +44,16 @@ public class UserController {
     String msg = "";
     @Autowired
     private UserServiceImpl userService;
+    private final UserAuthenticationImpl authenticationService;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/registerUser")
     @ResponseBody
-    public ResponseEntity<?> registerUser(@RequestBody User user){
+    public ResponseEntity<?> registerUser(@RequestBody SignupRequest user){
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(user.toString())){
-            if(userService.findByEmail(user.getEmail()) == null){
-                User nUser = userService.register(user);
+            if(userService.findByEmail(user.getEmail()).isEmpty()){
+                User nUser = authenticationService.signup(user);
                 if(nUser != null){
                     map.put("msg","Register");
                     map.put("data",nUser);
@@ -70,7 +77,7 @@ public class UserController {
     public ResponseEntity<?> registerUserWithoutRol(@RequestBody User user){
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(user.toString())){
-            if(userService.findByEmail(user.getEmail()) == null){
+            if(userService.findByEmail(user.getEmail()).isEmpty()){
                 if(userService.registerWithoutRol(user) >= 1){
                     map.put("msg","Register");
                     return new ResponseEntity<>(map, HttpStatus.CREATED);
@@ -95,7 +102,7 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(email)){
 
-            UsersDTO nUser = userService.findByEmail(email);
+            UsersDTO nUser = userService.findByEmailLog(email);
             System.out.println(nUser.getEmail());
                 if(nUser != null){
                     map.put("msg", "OK");
@@ -145,10 +152,18 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<?> findByEmailAndPassword(@RequestParam(name = "email")String email,@RequestParam(name = "password") String password){
         Map<String, Object> map = new HashMap<>();
+        SigninRequest signinRequest = new SigninRequest();
         if(!containsMaliciusWord(email) || containsMaliciusWord(password)){
-            User nUser = userService.findByEmailAndPassword(email,password);
-            if(!new Gson().toJson(nUser).equals("null")){
-                map.put("msg","Loged");
+                UsersDTO nUser = userService.findByEmailLog(email);
+            if(nUser != null){
+                if(passwordEncoder.matches(password,nUser.getEmail())){
+                    signinRequest.setEmail(email);
+                    signinRequest.setPassword(password);
+                    map.put("msg","Loged");
+                    map.put("data",authenticationService.signin(signinRequest));
+                }else{
+                    map.put("msg","EmailPassFail");
+                }
                 return new ResponseEntity<>(map, HttpStatus.OK);
             }else{
                 map.put("msg","NotExist");

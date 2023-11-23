@@ -75,7 +75,7 @@ public class HotelController {
                     if(hotelService.register(nHotel)  != null){
                         Hotel sHot = hotelService.findByName(nhotel.getName());
                         if(!new Gson().toJson(sHot).equals("null")){
-                            UsersDTO sUser = userService.findByEmail(email);
+                            UsersDTO sUser = userService.findByEmailLog(email);
                             if(sUser != null){
                                 if(hotelService.assignHotelUser(sUser.getIdUser(), sHot.getIdHotel()) >= 1){
                                     map.put("msg","Register");

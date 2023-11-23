@@ -10,6 +10,9 @@ import com.utez.geco.model.User;
 import com.utez.geco.repository.User.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,13 +20,14 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class UserServiceImpl {
+public class UserServiceImpl implements IUserService{
     @Autowired
     private UserRepository userRepository;
 
     public List<User> findAll(){return userRepository.findAll();}
 
-    public UsersDTO findByEmail(String email){return userRepository.findByEmail(email);}
+    public UsersDTO findByEmailLog(String email){return userRepository.findByEmailLog(email);}
+    public Optional<User> findByEmail(String email){return userRepository.findByEmail(email);}
     public UserById findById(Long id){return userRepository.findByIdUser(id);}
     public List<AllUsersDTO> findAllUsers(){return userRepository.findAllUsers();}
     public int assignRolToUser(Long idUser,Long idRol){return userRepository.assignRolToUser(idRol,idUser);}
@@ -43,5 +47,14 @@ public class UserServiceImpl {
         );
     }
 
+    @Override
+    public UserDetailsService userDetailsService(){
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                return userRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("User not found")) ;
+            }
+        };
+    }
 
 }

@@ -46,7 +46,11 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query(value = "select u.id_user as idUser,u.email,concat(p.name, ' ', p.surname, ' ', p.lastname) as userName,p.turn,u.status from user u " +
                       "join person p on p.id_person = u.id_person where u.email = :email",nativeQuery = true)
-    UsersDTO findByEmail(@Param("email") String email);
+    UsersDTO findByEmailLog(@Param("email") String email);
+
+
+    Optional<User> findByEmail(String email);
+    
 
     @Query(value = "select u.id_user as idUser,u.email,p.name, p.surname, p.lastname,\n" +
             "p.turn,u.status,r.id_rol as idRol from user u\n" +

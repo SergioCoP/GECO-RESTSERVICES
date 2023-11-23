@@ -36,7 +36,7 @@ public interface RoomRepository extends CrudRepository<Room,Long> {
             "join room r on ru.id_room = r.id_room;",nativeQuery = true)
     List<RoomsWithUser> getRoomsWithUsers();
 
-    @Query(value = "select r.id_room ,r.identifier as identifier,'' as description,'' as status\n" +
+    @Query(value = "select r.id_room ,r.identifier as identifier,r.description as description,r.status as status\n" +
             "                   from room r  where r.id_room = :idRoom",nativeQuery = true)
     Room getRoomWithUsersById(@Param("idRoom")Long idRoom);
     //
