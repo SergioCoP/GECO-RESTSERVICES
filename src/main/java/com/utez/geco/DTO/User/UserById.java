@@ -1,10 +1,13 @@
 package com.utez.geco.DTO.User;
 
-public interface UsersDTO {
+public interface UserById {
     Long getIdUser();
     String getEmail();
-    String getUserName();
+    String getName();
+    String getSurname();
+    String getLastname();
     String getTurn();
 
     Long getStatus();
+    Long getIdRol();
 }

@@ -6,5 +6,6 @@ public interface UsersByRol {
     String getEmail();
     String getTurn();
     String getRolName();
+    Long getStatus();
 
 }

@@ -48,7 +48,7 @@ public class User {
     private List<Hotel> hotels;
 
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.PERSIST)
     @JoinTable(
             name="user_rol",
             joinColumns = @JoinColumn(name="idUser"),

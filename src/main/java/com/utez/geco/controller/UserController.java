@@ -3,6 +3,7 @@ package com.utez.geco.controller;
 
 import com.google.gson.Gson;
 import com.utez.geco.DTO.User.AllUsersDTO;
+import com.utez.geco.DTO.User.UserById;
 import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.User;
 import com.utez.geco.service.User.UserServiceImpl;
@@ -64,6 +65,29 @@ public class UserController {
         }
     }
 
+    @PostMapping("/registerUserWithoutRol")
+    @ResponseBody
+    public ResponseEntity<?> registerUserWithoutRol(@RequestBody User user){
+        Map<String, Object> map = new HashMap<>();
+        if(!containsMaliciusWord(user.toString())){
+            if(userService.findByEmail(user.getEmail()) == null){
+                if(userService.registerWithoutRol(user) >= 1){
+                    map.put("msg","Register");
+                    return new ResponseEntity<>(map, HttpStatus.CREATED);
+                }else{
+                    map.put("msg", "NotExist");
+                    return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+                }
+            }else{
+                map.put("msg", "ExistEmail");
+                return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+            }
+        }else{
+            map.put("msg","BadWord");
+            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     @GetMapping("/getUserByEmail")
     @ResponseBody
@@ -92,7 +116,7 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<?> findUserById(@RequestParam(name = "idUser") Long id) {
         Map<String, Object> map = new HashMap<>();
-        UsersDTO nUser = userService.findById(id);
+        UserById nUser = userService.findById(id);
         if(nUser != null){
             map.put("msg","OK");
             map.put("data",nUser);
@@ -134,6 +158,30 @@ public class UserController {
             map.put("msg","BadWord");
             return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping ("/addRolToUser")
+    @ResponseBody
+    public ResponseEntity<?> addRolToUser(@RequestParam(name = "idUser")Long idUser,@RequestParam(name = "idRol") Long idRol){
+        Map<String, Object> map = new HashMap<>();
+        if(userService.findRolById(idRol) != null){
+            if(userService.findById(idUser) != null){
+                if(userService.assignRolToUser(idUser,idRol) >= 1){
+                    map.put("msg","Assigned");
+                    return new ResponseEntity<>(map, HttpStatus.OK);
+                }else{
+                    map.put("msg","NotAssigned");
+                    return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+                }
+            }else{
+                map.put("msg","UserNotFound");
+                return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+            }
+        }else{
+            map.put("msg","RolNotFound");
+            return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+        }
+
     }
 
 
