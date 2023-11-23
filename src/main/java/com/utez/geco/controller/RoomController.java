@@ -101,7 +101,7 @@ public class RoomController {
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(nrom.toString())){
             for (int i = 0; i < numHabitaciones; i++) {
-                nrom.setIdentifier(nameInit + (numInit+(i+1)));
+                nrom.setIdentifier(nameInit + (numInit+i));
                 nrom.setDescription(nrom.getDescription());
                 if(roomService.register(nrom) >=1){
                     nrrooms+=1;
