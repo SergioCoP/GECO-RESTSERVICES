@@ -53,8 +53,10 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         if(!containsMaliciusWord(user.toString())){
             if(userService.findByEmail(user.getEmail()).isEmpty()){
+                System.out.println(user.getIdRol().getIdRol());
                 User nUser = authenticationService.signup(user);
                 if(nUser != null){
+                    System.out.println(nUser.getIdRol().getName());
                     map.put("msg","Register");
                     map.put("data",nUser);
                     return new ResponseEntity<>(map, HttpStatus.CREATED);
@@ -154,9 +156,9 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         SigninRequest signinRequest = new SigninRequest();
         if(!containsMaliciusWord(email) || containsMaliciusWord(password)){
-                UsersDTO nUser = userService.findByEmailLog(email);
-            if(nUser != null){
-                if(passwordEncoder.matches(password,nUser.getEmail())){
+                Optional<User> nUser = userService.findByEmail(email);
+            if(!nUser.isEmpty()){
+                if(passwordEncoder.matches(password,nUser.get().getEmail())){
                     signinRequest.setEmail(email);
                     signinRequest.setPassword(password);
                     map.put("msg","Loged");
