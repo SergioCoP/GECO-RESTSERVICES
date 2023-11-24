@@ -36,7 +36,7 @@ public class User implements UserDetails {
     @Column(name = "password",nullable = false,length = 255)
     private String password;
     @Column(name = "status",nullable = false,columnDefinition = "int default 1")
-    private int status;
+    private int status = 1;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="idPerson")
@@ -59,7 +59,7 @@ public class User implements UserDetails {
     )
     private Role idRol = new Role();
 
-    @ManyToMany(mappedBy = "idUser",cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "idUser")
     @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
     private List<Room> rooms = new ArrayList<>();
 

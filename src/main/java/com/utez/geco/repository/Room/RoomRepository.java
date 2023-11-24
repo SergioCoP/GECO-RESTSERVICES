@@ -54,8 +54,13 @@ public interface RoomRepository extends CrudRepository<Room,Long> {
     List<RoomsDTO> getAllRooms();
     @Modifying
     @Transactional
-    @Query(value = "insert into room_user values(:idUser,:idRoom)" ,nativeQuery = true)
+    @Query(value = "insert into room_user(id_user,id_room) values(:idUser,:idRoom)" ,nativeQuery = true)
     int assignRoomToUser(@Param("idUser") Long idUser,@Param("idRoom") Long idRoom);
+
+    @Modifying
+    @Transactional
+    @Query(value = "delete from room_user where id_room = :idRoom AND id_user = :idUser" ,nativeQuery = true)
+    int unsignRoomToUser(@Param("idUser") Long idUser,@Param("idRoom") Long idRoom);
 
     @Query(value = "SELECT * FROM room_user where id_user = :idUser AND id_room = :idRoom",nativeQuery = true)
     Object validateRomUser (@Param("idUser") Long idUser,@Param("idRoom") Long idRoom);
@@ -65,4 +70,10 @@ public interface RoomRepository extends CrudRepository<Room,Long> {
     @Transactional
     @Query(value = "UPDATE room set status = :status where id_room = :idRoom",nativeQuery = true)
     int reviewRooom(@Param("status") int status,@Param("idRoom") Long idRoom);
+
+    @Modifying
+    @Transactional
+    @Query(value = "delete from room_user where  id_user = :idUser" ,nativeQuery = true)
+    int deleteRoomDownUser(@Param("idUser") Long idUser);
+
 }

@@ -8,6 +8,7 @@ import com.utez.geco.DTO.User.AllUsersDTO;
 import com.utez.geco.DTO.User.UserById;
 import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.User;
+import com.utez.geco.service.Room.RoomServiceImpl;
 import com.utez.geco.service.User.UserAuthenticationImpl;
 import com.utez.geco.service.User.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,8 @@ public class UserController {
     String msg = "";
     @Autowired
     private UserServiceImpl userService;
+    @Autowired
+    private RoomServiceImpl roomService;
     private final UserAuthenticationImpl authenticationService;
     private final PasswordEncoder passwordEncoder;
 
@@ -96,7 +99,6 @@ public class UserController {
             return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
         }
     }
-
 
     @GetMapping("/getUserByEmail")
     @ResponseBody
@@ -152,15 +154,12 @@ public class UserController {
 
     @PostMapping ("/login")
     @ResponseBody
-    public ResponseEntity<?> findByEmailAndPassword(@RequestParam(name = "email")String email,@RequestParam(name = "password") String password){
+    public ResponseEntity<?> findByEmailAndPassword(@RequestBody SigninRequest signinRequest){
         Map<String, Object> map = new HashMap<>();
-        SigninRequest signinRequest = new SigninRequest();
-        if(!containsMaliciusWord(email) || containsMaliciusWord(password)){
-                Optional<User> nUser = userService.findByEmail(email);
-            if(!nUser.isEmpty()){
-                if(passwordEncoder.matches(password,nUser.get().getEmail())){
-                    signinRequest.setEmail(email);
-                    signinRequest.setPassword(password);
+        if(!containsMaliciusWord(signinRequest.toString())){
+                Optional<User> nUser = userService.findByEmail(signinRequest.getEmail());
+            if(nUser.isPresent()){
+                if(passwordEncoder.matches(signinRequest.getPassword(), nUser.get().getPassword())){
                     map.put("msg","Loged");
                     map.put("data",authenticationService.signin(signinRequest));
                 }else{
@@ -209,6 +208,28 @@ public class UserController {
         List<AllUsersDTO> users = userService.findAllUsers();
         map.put("msg","OK");
         map.put("data",users);
+        return new ResponseEntity<>(map,HttpStatus.OK);
+    }
+
+    @PutMapping("/deactivateUser")
+    @ResponseBody
+    public ResponseEntity<?> deactivateUser(@RequestParam("status")int status,@RequestParam("idUser")Long idUser){
+        Map<String, Object> map = new HashMap<>();
+        if(userService.findById(idUser) != null){
+            if(status == 0){
+                if(userService.deactivateUser(idUser,status) >= 1){
+                    map.put("msg",roomService.deleteRoomUserDown(idUser));
+                    return new ResponseEntity<>(map,HttpStatus.OK);
+                }else{
+                    map.put("msg","NotUpdate");
+                }
+                return new ResponseEntity<>(map,HttpStatus.OK);
+            }else{
+
+            }
+        }else{
+            map.put("msg","UserNotFound");
+        }
         return new ResponseEntity<>(map,HttpStatus.OK);
     }
 

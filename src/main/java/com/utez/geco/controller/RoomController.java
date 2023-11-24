@@ -50,7 +50,7 @@ public class RoomController {
     @ResponseBody
     public ResponseEntity<?> getRoomById(@RequestParam("idRoom") Long id){
         Map<String, Object> map = new HashMap<>();
-        RoomsDTO room = roomService.findById(id);
+        RoomWithUserById room = roomService.findById(id);
         if(room != null){
             map.put("msg","OK");
             map.put("data",room);
@@ -163,6 +163,14 @@ public class RoomController {
     public ResponseEntity<?> assignUserToRoom(@RequestParam("idUser") Long idUser,@RequestParam("idRoom") Long idRoom){
         Map<String, Object> map = new HashMap<>();
         map.put("msg",roomService.assignUserToRoom(idUser,idRoom));
+        return new ResponseEntity<>(map,HttpStatus.OK);
+    }
+
+    @PostMapping("/unsignUserRoom")
+    @ResponseBody
+    public ResponseEntity<?> unsignUserToRoom(@RequestParam("idUser") Long idUser,@RequestParam("idRoom") Long idRoom){
+        Map<String, Object> map = new HashMap<>();
+        map.put("msg",roomService.unsignUserToRoom(idUser,idRoom));
         return new ResponseEntity<>(map,HttpStatus.OK);
     }
 
