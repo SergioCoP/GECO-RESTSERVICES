@@ -6,6 +6,7 @@ import com.utez.geco.DTO.Room.RoomsDTO;
 import com.utez.geco.DTO.Room.RoomsWithUser;
 import com.utez.geco.model.Room;
 import com.utez.geco.repository.Room.RoomRepository;
+import com.utez.geco.repository.User.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,21 @@ public class RoomServiceImpl extends Room {
     String msg = "";
     @Autowired
     private RoomRepository roomRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public List<RoomsDTO> findAll(){return roomRepository.getAllRooms();}
-    public RoomsDTO findById(Long id){return roomRepository.findByIdRoom(id);}
+    public RoomWithUserById findById(Long id){
+        RoomWithUserById ro = new RoomWithUserById();
+        Room rom = roomRepository.getRoomWithUsersById(id);
+        if(rom != null){
+            ro.setIdRoom(rom.getIdRoom());
+            ro.setIdentifier(rom.getIdentifier());
+            ro.setUsers(roomRepository.getUsersByIdRoom(id));
+        }
+
+        return ro;
+    }
 
     public int register(Room room){return roomRepository.registerRoom(room.getIdentifier(),room.getDescription(),room.getStatus());}
     public Room update(Room room){return roomRepository.save(room);}
@@ -55,6 +68,37 @@ public class RoomServiceImpl extends Room {
             }
         }else{
             msg = "RoomNotFound";
+        }
+        return msg;
+    }
+
+    public String unsignUserToRoom(Long idUser,Long idRoom){
+        RoomsDTO dRom = roomRepository.findByIdRoom(idRoom);
+        if(dRom != null){
+            if(userRepository.findByIdUser(idUser) != null){
+                if(roomRepository.unsignRoomToUser(idUser,idRoom) >= 1){
+                    msg = "Unsigned";
+                }else{
+                    msg = "NotUnsigned";
+                }
+            }else{
+                msg = "UserNotExist";
+            }
+        }else{
+            msg = "RoomNotExist";
+        }
+        return msg;
+    }
+
+    public String deleteRoomUserDown(Long idUser){
+        if(userRepository.findByIdUser(idUser) != null){
+            if(roomRepository.deleteRoomDownUser(idUser) >= 1){
+                msg = "Deleted";
+            }else{
+                msg = "NotDeleted";
+            }
+        }else{
+            msg = "UserNotExist";
         }
         return msg;
     }

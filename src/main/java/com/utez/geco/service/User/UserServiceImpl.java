@@ -30,6 +30,8 @@ public class UserServiceImpl {
     public RoleDTO findRolById(Long idRol){return userRepository.findRolById(idRol);}
     public List<UsersByRol> findUsersByRol(String rolName){return  userRepository.findUsersByRol(rolName);}
     public User findByEmailAndPassword(String email, String password){return userRepository.findByEmailAndPassword(email,password);}
+    public int deactivateUser(Long idUser,int status){
+        return userRepository.deactivateUser(status,idUser);}
     public User register(User user){
         return userRepository.save(user);}
     public int registerWithoutRol(User user){

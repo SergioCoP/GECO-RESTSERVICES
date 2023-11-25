@@ -30,11 +30,11 @@ public class Room {
     @Column(name = "description",length = 255)
     private String description;
     //rrrom-user
-    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @ManyToMany()
     @JoinTable(
             name = "room_user",
-            joinColumns = @JoinColumn(name ="idUser"),
-            inverseJoinColumns = @JoinColumn(name = "idRoom")
+            joinColumns = @JoinColumn(name ="idRoom"),
+            inverseJoinColumns = @JoinColumn(name = "idUser")
     )
     @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
     private List<User> idUser ;

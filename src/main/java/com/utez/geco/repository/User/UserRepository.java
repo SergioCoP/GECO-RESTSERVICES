@@ -72,4 +72,9 @@ public interface UserRepository extends JpaRepository<User, String> {
             "where r.name = :rolName",nativeQuery = true)
     List<UsersByRol> findUsersByRol(@Param("rolName")String rolName);
 
+    @Modifying
+    @Transactional
+    @Query(value = "update user set status = :status where id_user = :idUser",nativeQuery = true)
+    int deactivateUser(@Param("status") int status,@Param("idUser") Long idUser);
+
 }
