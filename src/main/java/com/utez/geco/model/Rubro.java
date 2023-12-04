@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "rubro")
 @JsonIdentityInfo(
@@ -21,14 +23,14 @@ public class Rubro {
     @Column(name = "description",length = 200)
     private String description;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="idRoom",nullable = true)
     @JoinTable(
             name = "room_rubro",
             joinColumns = @JoinColumn(name = "idRubro"),
             inverseJoinColumns = @JoinColumn(name = "idRoom")
     )
-    private Room idRoom;
+    private List<Room> idRoom;
 
     public Rubro() {
     }
@@ -49,13 +51,11 @@ public class Rubro {
         this.description = description;
     }
 
-    public Room getIdRoom() {
+    public List<Room> getIdRoom() {
         return idRoom;
     }
 
-    public void setIdRoom(Room idRoom) {
+    public void setIdRoom(List<Room> idRoom) {
         this.idRoom = idRoom;
     }
-
-
 }

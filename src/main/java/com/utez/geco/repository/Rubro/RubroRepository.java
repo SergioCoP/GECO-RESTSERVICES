@@ -21,4 +21,23 @@ public interface RubroRepository extends JpaRepository<Rubro,Long> {
 
     @Query(value = "select id_rubro as idRubro, description as name from rubro where description like %:rubro%",nativeQuery = true)
     RubroGetDTO findByName(@Param("rubro")String rubro);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM room_rubro where id_rubro = :idRubro AND id_room = :idRoom",nativeQuery = true)
+    int removeRubroFromRoom(@Param("idRoom") Long idRooom,@Param("idRubro")Long idRubro);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM room_rubro where id_room = :idRoom",nativeQuery = true)
+    int removeRubrosFromRoom(@Param("idRoom") Long idRooom);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO room_rubro(id_room,id_rubro) values(:idRoom,:idRubro)",nativeQuery = true)
+    int assignRubroToRoom(@Param("idRoom") Long idRooom,@Param("idRubro")Long idRubro);
+
+    @Query(value = "select COALESCE((select 'true' from room_rubro where id_room = :idRoom limit 1 ),\n" +
+            "    'false') as exist;",nativeQuery = true)
+    String verifyRoomWithRubro(@Param("idRoom") Long idRoom);
 }

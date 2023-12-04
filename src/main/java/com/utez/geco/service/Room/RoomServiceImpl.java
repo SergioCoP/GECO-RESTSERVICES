@@ -48,9 +48,13 @@ public class RoomServiceImpl extends Room {
     public RoomWithUserById getRoomWithUserById(Long idRoom){
         RoomWithUserById ro = new RoomWithUserById();
         Room rom = roomRepository.getRoomWithUsersById(idRoom);
-        ro.setIdRoom(rom.getIdRoom());
-        ro.setIdentifier(rom.getIdentifier());
-        ro.setUsers(roomRepository.getUsersByIdRoom(idRoom));
+        if(rom != null){
+            ro.setIdRoom(rom.getIdRoom());
+            ro.setIdentifier(rom.getIdentifier());
+            ro.setUsers(roomRepository.getUsersByIdRoom(idRoom));
+        }else{
+            ro = null;
+        }
         return ro;
     }
     public String assignUserToRoom(Long idUser,Long idRoom){
