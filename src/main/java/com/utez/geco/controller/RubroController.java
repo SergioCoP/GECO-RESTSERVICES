@@ -1,8 +1,12 @@
 package com.utez.geco.controller;
 
 
+import com.google.gson.JsonElement;
+import com.utez.geco.DTO.Rubro.RemoveRubroToRoom;
 import com.utez.geco.DTO.Rubro.RubroGetDTO;
+import com.utez.geco.DTO.Rubro.idRubro;
 import com.utez.geco.model.Rubro;
+import com.utez.geco.service.Room.RoomServiceImpl;
 import com.utez.geco.service.Rubro.RubroServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -33,6 +37,8 @@ public class RubroController {
             "sysobject",".js"};
     @Autowired
     private RubroServiceImpl rubroService;
+    @Autowired
+    private RoomServiceImpl roomService;
 
     @GetMapping("/getAllRubros")
     @ResponseBody
@@ -121,6 +127,79 @@ public class RubroController {
             map.put("msg","BadWord");
             return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/assignRubroToRoom")
+    @ResponseBody
+    public ResponseEntity<?> assignRubroToRoom(@RequestBody RemoveRubroToRoom asRubro){
+        Map<String, Object> map = new HashMap<>();
+        int nAsigns = 0;
+        if(!asRubro.getIdRoom().equals(0) || !asRubro.getIdRoom().equals(null)){
+            if(roomService.findById(asRubro.getIdRoom()) != null){
+                for (idRubro rubro: asRubro.getIdRubro()) {
+                    if(rubroService.assignRubroToRoom(asRubro.getIdRoom(),rubro.getIdRubro() ) >= 1){
+                        nAsigns++;
+                    }
+                }
+                if(nAsigns == asRubro.getIdRubro().size() ){
+                    map.put("msg","Assigned");
+                }
+            }else{
+                map.put("msg","RoomNoFound");
+            }
+
+        }else{
+            map.put("msg","EmptyData");
+        }
+        return new ResponseEntity<>(map,HttpStatus.OK);
+    }
+
+    @DeleteMapping("/removeRubrosFromRoom")
+    @ResponseBody
+    public ResponseEntity<?> removeRubrosFromRoom(@RequestParam("idRoom")Long idRoom){
+        Map<String, Object> map = new HashMap<>();
+        if(idRoom != null || idRoom != 0){
+            if(roomService.findById(idRoom) != null){
+                if(rubroService.validateRoomWithRubros(idRoom).equals("true")){
+                    if(rubroService.removeRubrosFromRoom(idRoom) >= 1){
+                        map.put("msg","Removed");
+                    }else{
+                        map.put("msg","NotRemoved");
+                    }
+                }else{
+                    map.put("msg","RoomWithoutRubros");
+                }
+            }else{
+                map.put("msg","RoomNotFound");
+            }
+        }else{
+            map.put("msg","RoomEmpty");
+        }
+        return new ResponseEntity<>(map,HttpStatus.OK);
+    }
+
+    @DeleteMapping("/removeRubroFromRoom")
+    @ResponseBody
+    public ResponseEntity<?> removeRubroFromRoom(@RequestParam("idRoom")Long idRoom,@RequestParam("idRubro") Long idRubro){
+        Map<String, Object> map = new HashMap<>();
+        if(idRoom != null || idRoom != 0 && idRubro != null || idRubro != 0) {
+            if (roomService.findById(idRoom) != null) {
+                if(rubroService.validateRoomWithRubros(idRoom).equals("true")){
+                    if (rubroService.removeRubroFromRoom(idRoom,idRubro) >= 1) {
+                        map.put("msg", "Removed");
+                    } else {
+                        map.put("msg", "NotRemoved");
+                    }
+                }else{
+                    map.put("msg","RoomWithoutRubros");
+                }
+            } else {
+                map.put("msg", "RoomNotFound");
+            }
+        }else{
+            map.put("msg", "RoomRubroEmpty");
+        }
+        return new ResponseEntity<>(map,HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteRubro")

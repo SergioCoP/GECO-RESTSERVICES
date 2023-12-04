@@ -43,4 +43,13 @@ public class RoomWithUserById {
     public void setUsers(List<UsersByRoom> users) {
         this.users = users;
     }
+
+//    @Override
+//    public String toString() {
+//        return "RoomWithUserById{" +
+//                "idRoom=" + idRoom +
+//                ", identifier='" + identifier + '\'' +
+//                ", users=" + users +
+//                '}';
+//    }
 }

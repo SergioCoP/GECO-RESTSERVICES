@@ -39,7 +39,7 @@ public class Room {
     @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
     private List<User> idUser ;
    //room-rubro
-    @OneToMany(mappedBy = "idRoom",fetch = FetchType.EAGER,orphanRemoval = true)
+    @ManyToMany(mappedBy = "idRoom",fetch = FetchType.EAGER)
     private List<Rubro> rubros = new ArrayList<>();
 
     @OneToMany(mappedBy = "idRoom",fetch = FetchType.EAGER,orphanRemoval = true)

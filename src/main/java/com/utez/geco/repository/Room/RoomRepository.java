@@ -41,9 +41,9 @@ public interface RoomRepository extends CrudRepository<Room,Long> {
     Room getRoomWithUsersById(@Param("idRoom")Long idRoom);
     //
     @Query(value = "select CONCAT(p.name,' ',p.surname, ' ',p.lastname) as userName,u.id_user as idUser  from user u\n" +
-            "join room_user ru on u.id_user = ru.id_user\n" +
-            "join room r on ru.id_room = r.id_room\n" +
-            "join person p on u.id_person = p.id_person\n" +
+            "left join room_user ru on u.id_user = ru.id_user\n" +
+            "left join room r on ru.id_room = r.id_room\n" +
+            "left join person p on u.id_person = p.id_person\n" +
             "where r.id_room = :idRoom",nativeQuery = true)
     List<UsersByRoom> getUsersByIdRoom(@Param("idRoom")Long idRoom);
 

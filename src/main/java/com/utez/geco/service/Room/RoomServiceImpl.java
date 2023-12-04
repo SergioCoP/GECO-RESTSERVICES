@@ -23,12 +23,17 @@ public class RoomServiceImpl extends Room {
     private UserRepository userRepository;
 
     public List<RoomsDTO> findAll(){return roomRepository.getAllRooms();}
+
     public RoomWithUserById findById(Long id){
         RoomWithUserById ro = new RoomWithUserById();
         Room rom = roomRepository.getRoomWithUsersById(id);
-        ro.setIdRoom(rom.getIdRoom());
-        ro.setIdentifier(rom.getIdentifier());
-        ro.setUsers(roomRepository.getUsersByIdRoom(id));
+        if(rom != null){
+            ro.setIdRoom(rom.getIdRoom());
+            ro.setIdentifier(rom.getIdentifier());
+            ro.setUsers(roomRepository.getUsersByIdRoom(id));
+        }else{
+            ro = null;
+        }
         return ro;
     }
 
