@@ -29,6 +29,7 @@ public class RoomServiceImpl extends Room {
         if(rom != null){
             ro.setIdRoom(rom.getIdRoom());
             ro.setIdentifier(rom.getIdentifier());
+            ro.setDescription(rom.getDescription());
             ro.setUsers(roomRepository.getUsersByIdRoom(id));
         }
 
@@ -51,6 +52,7 @@ public class RoomServiceImpl extends Room {
         if(rom != null){
             ro.setIdRoom(rom.getIdRoom());
             ro.setIdentifier(rom.getIdentifier());
+            ro.setDescription(rom.getDescription());
             ro.setUsers(roomRepository.getUsersByIdRoom(idRoom));
         }else{
             ro = null;

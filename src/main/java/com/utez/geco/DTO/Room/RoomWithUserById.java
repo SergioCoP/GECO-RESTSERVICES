@@ -12,6 +12,7 @@ import java.util.List;
 public class RoomWithUserById {
     private Long idRoom;
     private String identifier;
+    private String description;
 
     private List<UsersByRoom> users;
 
@@ -42,5 +43,13 @@ public class RoomWithUserById {
 
     public void setUsers(List<UsersByRoom> users) {
         this.users = users;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
