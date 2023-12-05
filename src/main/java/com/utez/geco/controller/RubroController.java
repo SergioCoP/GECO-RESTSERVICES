@@ -1,6 +1,8 @@
 package com.utez.geco.controller;
 
 
+import com.google.gson.JsonObject;
+import com.utez.geco.DTO.Room.RoomsDTO;
 import com.utez.geco.DTO.Rubro.RubroGetDTO;
 import com.utez.geco.model.Rubro;
 import com.utez.geco.DTO.Rubro.idRubro;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/rubro")
@@ -148,18 +151,28 @@ public class RubroController {
     public ResponseEntity<?> assignRubroToRoom(@RequestBody RemoveRubroToRoom asRubro){
         Map<String, Object> map = new HashMap<>();
         int nAsigns = 0;
-        if(!asRubro.getIdRoom().equals(0) || !asRubro.getIdRoom().equals(null)){
-            if(roomService.findById(asRubro.getIdRoom()) != null){
-                for (idRubro rubro: asRubro.getIdRubro()) {
-                    if(rubroService.assignRubroToRoom(asRubro.getIdRoom(),rubro.getIdRubro() ) >= 1){
-                        nAsigns++;
-                    }
+        int romsSize = 0;
+        int romsAss = 0;
+        if(!Objects.equals(asRubro.getCategory(), "") || asRubro.getCategory() != null){
+            List<RoomsDTO> rooms = roomService.findByCategory(asRubro.getCategory());
+            romsSize = rooms.size();
+            if(rooms.size() > 0){
+                for (RoomsDTO room : rooms) {
+                    for (idRubro rubro: asRubro.getIdRubro()) {
+                        if(rubroService.assignRubroToRoom(room.getIdRoom(),rubro.getIdRubro() ) >= 1){
+                            nAsigns++;
+                        }
                 }
-                if(nAsigns == asRubro.getIdRubro().size() ){
+                    if(nAsigns == asRubro.getIdRubro().size()){
+                        romsAss++;
+                    }
+
+                }
+                if(romsAss == romsSize ){
                     map.put("msg","Assigned");
                 }
             }else{
-                map.put("msg","RoomNoFound");
+                map.put("msg","NotFound");
             }
 
         }else{
@@ -170,25 +183,50 @@ public class RubroController {
 
     @DeleteMapping("/removeRubrosFromRoom")
     @ResponseBody
-    public ResponseEntity<?> removeRubrosFromRoom(@RequestParam("idRoom")Long idRoom){
+    public ResponseEntity<?> removeRubrosFromRoom(@RequestParam("category")String category){
         Map<String, Object> map = new HashMap<>();
-        if(idRoom != null || idRoom != 0){
-            if(roomService.findById(idRoom) != null){
-                if(rubroService.validateRoomWithRubros(idRoom).equals("true")){
-                    if(rubroService.removeRubrosFromRoom(idRoom) >= 1){
-                        map.put("msg","Removed");
+        int roomsSize = 0,nRemove = 0,notRemove = 0;
+        List<RoomsDTO> rooms;
+        if(!Objects.equals(category,"") || !Objects.equals(category,null)){
+            rooms = roomService.findByCategory(category);
+            roomsSize = rooms.size();
+            if(roomsSize > 0){
+                for (RoomsDTO room:rooms) {
+                    if(rubroService.validateRoomWithRubros(room.getIdRoom()).equals("true")){
+                        if(rubroService.removeRubrosFromRoom(room.getIdRoom()) >= 1){
+                            nRemove++;
+                        }
                     }else{
-                        map.put("msg","NotRemoved");
+                        notRemove ++;
                     }
-                }else{
-                    map.put("msg","RoomWithoutRubros");
                 }
+                JsonObject data = new JsonObject();
+                data.addProperty("roomsRemoved",nRemove);
+                data.addProperty("roomsNotRemoved-notRubros",notRemove);
+                 map.put("msg","removed");
+                map.put("data",data);
             }else{
-                map.put("msg","RoomNotFound");
+                map.put("msg","RoomsNotFound");
             }
         }else{
-            map.put("msg","RoomEmpty");
+            map.put("msg","EmptyData");
         }
+        return new ResponseEntity<>(map,HttpStatus.OK);
+    }
+
+    @PutMapping("/changueState")
+    @ResponseBody
+    public ResponseEntity<?> changeState(@RequestParam("idRubor")Long idRubro){
+        Map<String, Object> map = new HashMap<>();
+            if(!Objects.equals(rubroService.findById(idRubro),null) ){
+                if(rubroService.changueState(idRubro) >=1){
+                    map.put("msg","Changed");
+                }else{
+                    map.put("msg","NotChanged");
+                }
+            }else{
+                map.put("msg","NotFound");
+            }
         return new ResponseEntity<>(map,HttpStatus.OK);
     }
 

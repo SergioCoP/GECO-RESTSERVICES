@@ -34,6 +34,11 @@ public interface RubroRepository extends JpaRepository<Rubro,Long> {
 
     @Modifying
     @Transactional
+    @Query(value = "UPDATE RUBRO SET status = :state where id_rubro = :idRubro",nativeQuery = true)
+    int changueState(@Param("idRubro")Long idRubro);
+
+    @Modifying
+    @Transactional
     @Query(value = "INSERT INTO room_rubro(id_room,id_rubro) values(:idRoom,:idRubro)",nativeQuery = true)
     int assignRubroToRoom(@Param("idRoom") Long idRooom,@Param("idRubro")Long idRubro);
 

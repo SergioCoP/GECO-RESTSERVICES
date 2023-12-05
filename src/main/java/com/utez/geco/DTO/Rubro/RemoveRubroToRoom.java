@@ -8,18 +8,18 @@ import java.util.Map;
 
 
 public class RemoveRubroToRoom {
-    private Long idRoom;
+    private String category;
     private List<idRubro> idRubro;
 
     public RemoveRubroToRoom() {
     }
 
-    public Long getIdRoom() {
-        return idRoom;
+    public String getCategory() {
+        return category;
     }
 
-    public void setIdRoom(Long idRoom) {
-        this.idRoom = idRoom;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public List<com.utez.geco.DTO.Rubro.idRubro> getIdRubro() {
