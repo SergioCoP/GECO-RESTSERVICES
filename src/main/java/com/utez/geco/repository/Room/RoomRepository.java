@@ -71,6 +71,8 @@ public interface RoomRepository extends CrudRepository<Room,Long> {
     @Query(value = "UPDATE room set status = :status where id_room = :idRoom",nativeQuery = true)
     int reviewRooom(@Param("status") int status,@Param("idRoom") Long idRoom);
 
+
+
     @Modifying
     @Transactional
     @Query(value = "delete from room_user where  id_user = :idUser" ,nativeQuery = true)

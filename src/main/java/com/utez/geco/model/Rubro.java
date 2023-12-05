@@ -23,6 +23,9 @@ public class Rubro {
     @Column(name = "description",length = 200)
     private String description;
 
+    @Column(name = "status")
+    private int status;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="idRoom",nullable = true)
     @JoinTable(

@@ -25,7 +25,7 @@ public class Room {
 
 
     @Column(name = "status",columnDefinition = "int default 1")
-    private int status;
+    private int status = 1;
 
     @Column(name = "description",length = 255)
     private String description;

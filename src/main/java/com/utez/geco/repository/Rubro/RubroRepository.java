@@ -37,6 +37,11 @@ public interface RubroRepository extends JpaRepository<Rubro,Long> {
     @Query(value = "INSERT INTO room_rubro(id_room,id_rubro) values(:idRoom,:idRubro)",nativeQuery = true)
     int assignRubroToRoom(@Param("idRoom") Long idRooom,@Param("idRubro")Long idRubro);
 
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE rubro set status = :status where id_rubro = :idRubro",nativeQuery = true)
+    int changuestatus(@Param("status") int status,@Param("idRubro")Long idRubro);
+
     @Query(value = "select COALESCE((select 'true' from room_rubro where id_room = :idRoom limit 1 ),\n" +
             "    'false') as exist;",nativeQuery = true)
     String verifyRoomWithRubro(@Param("idRoom") Long idRoom);

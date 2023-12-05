@@ -129,6 +129,22 @@ public class RubroController {
         }
     }
 
+    @PutMapping("/changeStatusRubro")
+    @ResponseBody
+    public ResponseEntity<?> changeStatusRubro(@RequestParam("status") int status,@RequestParam("idRubro")Long idRubro){
+        Map<String, Object> map = new HashMap<>();
+            if(rubroService.findById(idRubro) != null){
+                if(rubroService.changueStatus(status,idRubro) >= 1){
+                    map.put("msg","StatusChanged");
+                }else{
+                    map.put("msg","NotChanged");
+                }
+            }else{
+                map.put("msg","NotExist");
+            }
+        return new ResponseEntity<>(map,HttpStatus.OK);
+    }
+
     @PostMapping("/assignRubroToRoom")
     @ResponseBody
     public ResponseEntity<?> assignRubroToRoom(@RequestBody RemoveRubroToRoom asRubro){
