@@ -24,6 +24,6 @@ public class RubroServiceImpl {
     public int assignRubroToRoom(Long idRoom,Long idRubro){return rubroRepository.assignRubroToRoom(idRoom,idRubro);}
     public int removeRubroFromRoom(Long idRoom,Long idRubro){return rubroRepository.removeRubroFromRoom(idRoom,idRubro);}
     public int removeRubrosFromRoom(Long idRoom){return rubroRepository.removeRubrosFromRoom(idRoom);}
-    public int changueState(Long idRubro){return rubroRepository.changueState(idRubro);}
+    public int changueState(Long idRubro,int state){return rubroRepository.changueState(idRubro,state);}
     public String validateRoomWithRubros(Long idRoom){return rubroRepository.verifyRoomWithRubro(idRoom);}
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/user")
@@ -198,22 +199,18 @@ public class UserController {
         return new ResponseEntity<>(map,HttpStatus.OK);
     }
 
-    @PutMapping("/deactivateUser")
+    @PutMapping("/changueState")
     @ResponseBody
     public ResponseEntity<?> deactivateUser(@RequestParam("status")int status,@RequestParam("idUser")Long idUser){
         Map<String, Object> map = new HashMap<>();
         if(userService.findById(idUser) != null){
-            if(status == 0){
-                if(userService.deactivateUser(idUser,status) >= 1){
+                if(userService.changueState(idUser,status) >= 1){
                     map.put("msg",roomService.deleteRoomUserDown(idUser));
                     return new ResponseEntity<>(map,HttpStatus.OK);
                 }else{
                     map.put("msg","NotUpdate");
                 }
                 return new ResponseEntity<>(map,HttpStatus.OK);
-            }else{
-
-            }
         }else{
             map.put("msg","UserNotFound");
         }

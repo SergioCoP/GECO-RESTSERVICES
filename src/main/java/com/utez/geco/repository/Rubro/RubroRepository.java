@@ -19,7 +19,7 @@ public interface RubroRepository extends JpaRepository<Rubro,Long> {
     int delete(@Param("idRubro") Long id);
 
 
-    @Query(value = "select id_rubro as idRubro, description as name from rubro where description like %:rubro%",nativeQuery = true)
+    @Query(value = "select id_rubro as idRubro, description,status from rubro where description like %:rubro%",nativeQuery = true)
     RubroGetDTO findByName(@Param("rubro")String rubro);
 
     @Modifying
@@ -34,8 +34,8 @@ public interface RubroRepository extends JpaRepository<Rubro,Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE RUBRO SET status = :state where id_rubro = :idRubro",nativeQuery = true)
-    int changueState(@Param("idRubro")Long idRubro);
+    @Query(value = "UPDATE rubro SET status = :state where id_rubro = :idRubro",nativeQuery = true)
+    int changueState(@Param("idRubro")Long idRubro,@Param("state")int state);
 
     @Modifying
     @Transactional

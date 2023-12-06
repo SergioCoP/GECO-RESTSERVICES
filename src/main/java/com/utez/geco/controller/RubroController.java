@@ -162,14 +162,18 @@ public class RubroController {
                         if(rubroService.assignRubroToRoom(room.getIdRoom(),rubro.getIdRubro() ) >= 1){
                             nAsigns++;
                         }
+                        System.out.println("Rubros asignados a room: " + nAsigns);
+                        if(nAsigns == asRubro.getIdRubro().size()){
+                            nAsigns = 0;
+                            romsAss++;
+                        }
                 }
-                    if(nAsigns == asRubro.getIdRubro().size()){
-                        romsAss++;
-                    }
-
+                    System.out.println("Roms asignadas: " + romsAss);
                 }
                 if(romsAss == romsSize ){
                     map.put("msg","Assigned");
+                }else{
+                    map.put("msg","NotAllAssigned");
                 }
             }else{
                 map.put("msg","NotFound");
@@ -200,11 +204,11 @@ public class RubroController {
                         notRemove ++;
                     }
                 }
-                JsonObject data = new JsonObject();
-                data.addProperty("roomsRemoved",nRemove);
-                data.addProperty("roomsNotRemoved-notRubros",notRemove);
-                 map.put("msg","removed");
-                map.put("data",data);
+                if(nRemove + notRemove == roomsSize){
+                    map.put("msg","removed");
+                }else{
+                    map.put("msg","NotAllRemoved");
+                }
             }else{
                 map.put("msg","RoomsNotFound");
             }
@@ -216,10 +220,10 @@ public class RubroController {
 
     @PutMapping("/changueState")
     @ResponseBody
-    public ResponseEntity<?> changeState(@RequestParam("idRubor")Long idRubro){
+    public ResponseEntity<?> changeState(@RequestParam("idRubro")Long idRubro,@RequestParam("status")int state){
         Map<String, Object> map = new HashMap<>();
             if(!Objects.equals(rubroService.findById(idRubro),null) ){
-                if(rubroService.changueState(idRubro) >=1){
+                if(rubroService.changueState(idRubro,state) >=1){
                     map.put("msg","Changed");
                 }else{
                     map.put("msg","NotChanged");
