@@ -211,13 +211,13 @@ public class UserController {
         return new ResponseEntity<>(map,HttpStatus.OK);
     }
 
-    @PutMapping("/deactivateUser")
+    @PutMapping("/changueState")
     @ResponseBody
     public ResponseEntity<?> deactivateUser(@RequestParam("status")int status,@RequestParam("idUser")Long idUser){
         Map<String, Object> map = new HashMap<>();
         if(userService.findById(idUser) != null){
             if(status == 0){
-                if(userService.deactivateUser(idUser,status) >= 1){
+                if(userService.changueState(idUser,status) >= 1){
                     map.put("msg",roomService.deleteRoomUserDown(idUser));
                     return new ResponseEntity<>(map,HttpStatus.OK);
                 }else{

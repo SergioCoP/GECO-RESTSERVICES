@@ -29,6 +29,9 @@ public class Room {
 
     @Column(name = "description",length = 255)
     private String description;
+
+    @Column(name = "category",length = 255)
+    private String category;
     //rrrom-user
     @ManyToMany()
     @JoinTable(
@@ -100,6 +103,14 @@ public class Room {
 
     public void setIncidences(List<Incidence> incidences) {
         this.incidences = incidences;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
 }

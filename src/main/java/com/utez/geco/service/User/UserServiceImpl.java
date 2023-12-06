@@ -35,7 +35,7 @@ public class UserServiceImpl implements IUserService{
     public List<UsersByRol> findUsersByRol(String rolName){return  userRepository.findUsersByRol(rolName);}
     public User findByEmailAndPassword(String email, String password){return userRepository.findByEmailAndPassword(email,password);}
 
-    public int deactivateUser(Long idUser,int status){
+    public int changueState(Long idUser,int status){
         return userRepository.deactivateUser(status,idUser);}
     public User register(User user){
         return userRepository.save(user);}

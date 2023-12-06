@@ -24,7 +24,7 @@ public class Rubro {
     private String description;
 
     @Column(name = "status")
-    private int status;
+    private int status = 1;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="idRoom",nullable = true)
@@ -60,5 +60,13 @@ public class Rubro {
 
     public void setIdRoom(List<Room> idRoom) {
         this.idRoom = idRoom;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

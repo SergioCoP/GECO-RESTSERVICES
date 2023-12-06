@@ -23,11 +23,16 @@ public interface RoomRepository extends CrudRepository<Room,Long> {
             "left join person p on u.id_person = p.id_person where r.id_room = :idRoom",nativeQuery = true)
     RoomsDTO findByIdRoom(@Param("idRoom")Long idRoom);
 
+    @Query(value = "select r.id_room as idRoom,r.identifier,r.status,r.description,u.id_user as idUser,CONCAT(p.name, ' ',p.surname, ' ', p.lastname) as userName from room r\n" +
+            "left join room_user ru on r.id_room = ru.id_room\n" +
+            "left join user u on ru.id_user = u.id_user\n" +
+            "left join person p on u.id_person = p.id_person where r.category = :category",nativeQuery = true)
+    List<RoomsDTO> findByCategory(@Param("category")String category);
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO room(identifier,description,status) values(:identifier,:description,:status)",nativeQuery = true)
-    int registerRoom(@Param("identifier")String roomId,@Param("description")String roomDesc,@Param("status")int status);
+    @Query(value = "INSERT INTO room(identifier,description,category,status) values(:identifier,:description,:category,:status)",nativeQuery = true)
+    int registerRoom(@Param("identifier")String roomId,@Param("description")String roomDesc,@Param("category")String category,@Param("status")int status);
 
     @Query(value = "select r.id_room as idRoom,r.identifier as identifier ,u.id_user as idUser,CONCAT(p.name,' ',p.surname,' ',p.lastname) as userName\n" +
             "       from user u\n" +

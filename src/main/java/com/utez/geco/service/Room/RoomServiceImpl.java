@@ -37,7 +37,11 @@ public class RoomServiceImpl extends Room {
         return ro;
     }
 
-    public int register(Room room){return roomRepository.registerRoom(room.getIdentifier(),room.getDescription(),room.getStatus());}
+    public List<RoomsDTO> findByCategory(String category){
+        return roomRepository.findByCategory(category);
+    }
+
+    public int register(Room room){return roomRepository.registerRoom(room.getIdentifier(),room.getDescription(),room.getCategory(),room.getStatus());}
     public Room update(Room room){return roomRepository.save(room);}
     public void delete(Long id){
         roomRepository.deleteById(id);
