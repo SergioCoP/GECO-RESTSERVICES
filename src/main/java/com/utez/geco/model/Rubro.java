@@ -2,6 +2,7 @@ package com.utez.geco.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
@@ -27,13 +28,13 @@ public class Rubro {
     private int status = 1;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name="idRoom",nullable = true)
     @JoinTable(
-            name = "room_rubro",
-            joinColumns = @JoinColumn(name = "idRubro"),
-            inverseJoinColumns = @JoinColumn(name = "idRoom")
+            name = "category_rubro",
+            joinColumns = @JoinColumn(name ="idRubro"),
+            inverseJoinColumns = @JoinColumn(name = "idCategory")
     )
-    private List<Room> idRoom;
+    @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
+    private List<RoomCategory> idRoomCategory;
 
     public Rubro() {
     }
@@ -54,12 +55,12 @@ public class Rubro {
         this.description = description;
     }
 
-    public List<Room> getIdRoom() {
-        return idRoom;
+    public List<RoomCategory> getIdRoomCategory() {
+        return idRoomCategory;
     }
 
-    public void setIdRoom(List<Room> idRoom) {
-        this.idRoom = idRoom;
+    public void setIdRoomCategory(List<RoomCategory> idRoomCategory) {
+        this.idRoomCategory = idRoomCategory;
     }
 
     public int getStatus() {

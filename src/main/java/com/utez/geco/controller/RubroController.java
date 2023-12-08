@@ -3,6 +3,8 @@ package com.utez.geco.controller;
 
 import com.google.gson.JsonObject;
 import com.utez.geco.DTO.Room.RoomsDTO;
+import com.utez.geco.DTO.Room.RoomCategoryDTO;
+import com.utez.geco.DTO.Rubro.RubroCategoryDTO;
 import com.utez.geco.DTO.Rubro.RubroGetDTO;
 import com.utez.geco.model.Rubro;
 import com.utez.geco.DTO.Rubro.idRubro;
@@ -146,74 +148,29 @@ public class RubroController {
         }
     }
 
-    @PostMapping("/assignRubroToRoom")
+    @PostMapping("/assignRubroToCategory")
     @ResponseBody
-    public ResponseEntity<?> assignRubroToRoom(@RequestBody RemoveRubroToRoom asRubro){
+    public ResponseEntity<?> assignRubroToCategory(@RequestBody RubroCategoryDTO rubCat){
         Map<String, Object> map = new HashMap<>();
         int nAsigns = 0;
-        int romsSize = 0;
-        int romsAss = 0;
-        if(!Objects.equals(asRubro.getCategory(), "") || asRubro.getCategory() != null){
-            List<RoomsDTO> rooms = roomService.findByCategory(asRubro.getCategory());
-            romsSize = rooms.size();
-            if(rooms.size() > 0){
-                for (RoomsDTO room : rooms) {
-                    for (idRubro rubro: asRubro.getIdRubro()) {
-                        if(rubroService.assignRubroToRoom(room.getIdRoom(),rubro.getIdRubro() ) >= 1){
-                            nAsigns++;
-                        }
-                        System.out.println("Rubros asignados a room: " + nAsigns);
-                        if(nAsigns == asRubro.getIdRubro().size()){
-                            nAsigns = 0;
-                            romsAss++;
-                        }
-                }
-                    System.out.println("Roms asignadas: " + romsAss);
-                }
-                if(romsAss == romsSize ){
-                    map.put("msg","Assigned");
-                }else{
-                    map.put("msg","NotAllAssigned");
-                }
-            }else{
-                map.put("msg","NotFound");
-            }
+        int rubSize = rubCat.getIdRubro().size();
+        int rubsAss = 0;
 
-        }else{
-            map.put("msg","EmptyData");
-        }
-        return new ResponseEntity<>(map,HttpStatus.OK);
-    }
-
-    @DeleteMapping("/removeRubrosFromRoom")
-    @ResponseBody
-    public ResponseEntity<?> removeRubrosFromRoom(@RequestParam("category")String category){
-        Map<String, Object> map = new HashMap<>();
-        int roomsSize = 0,nRemove = 0,notRemove = 0;
-        List<RoomsDTO> rooms;
-        if(!Objects.equals(category,"") || !Objects.equals(category,null)){
-            rooms = roomService.findByCategory(category);
-            roomsSize = rooms.size();
-            if(roomsSize > 0){
-                for (RoomsDTO room:rooms) {
-                    if(rubroService.validateRoomWithRubros(room.getIdRoom()).equals("true")){
-                        if(rubroService.removeRubrosFromRoom(room.getIdRoom()) >= 1){
-                            nRemove++;
-                        }
-                    }else{
-                        notRemove ++;
+        if(roomService.findCategoryById(rubCat.getIdCategory()) != null) {
+            if (rubCat.getIdRubro().size() > 0) {
+                for (idRubro rubro : rubCat.getIdRubro()) {
+                    if (rubroService.assignRubroCategory(rubro.getIdRubro(), rubCat.getIdCategory()) >= 1) {
+                        rubsAss++;
                     }
                 }
-                if(nRemove + notRemove == roomsSize){
-                    map.put("msg","removed");
-                }else{
-                    map.put("msg","NotAllRemoved");
+                if (rubsAss == rubSize) {
+                    map.put("msg", "Assigned");
                 }
-            }else{
-                map.put("msg","RoomsNotFound");
+            } else {
+                map.put("msg", "EmptyRubros");
             }
         }else{
-            map.put("msg","EmptyData");
+            map.put("msg","CategoryNotFound");
         }
         return new ResponseEntity<>(map,HttpStatus.OK);
     }
@@ -233,32 +190,7 @@ public class RubroController {
             }
         return new ResponseEntity<>(map,HttpStatus.OK);
     }
-
-    @DeleteMapping("/removeRubroFromRoom")
-    @ResponseBody
-    public ResponseEntity<?> removeRubroFromRoom(@RequestParam("idRoom")Long idRoom,@RequestParam("idRubro") Long idRubro){
-        Map<String, Object> map = new HashMap<>();
-        if(idRoom != null || idRoom != 0 && idRubro != null || idRubro != 0) {
-            if (roomService.findById(idRoom) != null) {
-                if(rubroService.validateRoomWithRubros(idRoom).equals("true")){
-                    if (rubroService.removeRubroFromRoom(idRoom,idRubro) >= 1) {
-                        map.put("msg", "Removed");
-                    } else {
-                        map.put("msg", "NotRemoved");
-                    }
-                }else{
-                    map.put("msg","RoomWithoutRubros");
-                }
-            } else {
-                map.put("msg", "RoomNotFound");
-            }
-        }else{
-            map.put("msg", "RoomRubroEmpty");
-        }
-        return new ResponseEntity<>(map,HttpStatus.OK);
-    }
-
-
+    
     private boolean containsMaliciusWord(String texto) {
         for (String palabra : blacklist) {
             if (texto.toLowerCase().contains(palabra.toLowerCase())) {
