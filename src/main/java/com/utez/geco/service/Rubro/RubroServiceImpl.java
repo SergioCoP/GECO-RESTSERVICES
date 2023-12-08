@@ -1,5 +1,6 @@
 package com.utez.geco.service.Rubro;
 
+import com.utez.geco.DTO.Room.RubroCategoryDTO;
 import com.utez.geco.DTO.Rubro.RubroGetDTO;
 import com.utez.geco.model.Rubro;
 import com.utez.geco.repository.Rubro.RubroRepository;
@@ -21,9 +22,7 @@ public class RubroServiceImpl {
     public Rubro update(Rubro rubro){return rubroRepository.save(rubro);}
     public void delete(Long id){rubroRepository.deleteById(id);}
     public RubroGetDTO findByName(String name){return rubroRepository.findByName(name);}
-    public int assignRubroToRoom(Long idRoom,Long idRubro){return rubroRepository.assignRubroToRoom(idRoom,idRubro);}
-    public int removeRubroFromRoom(Long idRoom,Long idRubro){return rubroRepository.removeRubroFromRoom(idRoom,idRubro);}
-    public int removeRubrosFromRoom(Long idRoom){return rubroRepository.removeRubrosFromRoom(idRoom);}
+    public int assignRubroCategory(Long idRubro,Long idCategory){return rubroRepository.assignRubroToCategory(idRubro,idCategory);}
     public int changueState(Long idRubro,int state){return rubroRepository.changueState(idRubro,state);}
     public String validateRoomWithRubros(Long idRoom){return rubroRepository.verifyRoomWithRubro(idRoom);}
 

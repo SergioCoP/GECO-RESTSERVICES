@@ -22,16 +22,12 @@ public class Room {
     @Column(name = "identifier",length = 20)
     private String identifier;
 
-
-
     @Column(name = "status",columnDefinition = "int default 1")
     private int status = 1;
 
     @Column(name = "description",length = 255)
     private String description;
 
-    @Column(name = "category",length = 255)
-    private String category;
     //rrrom-user
     @ManyToMany()
     @JoinTable(
@@ -42,12 +38,17 @@ public class Room {
     @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
     private List<User> idUser ;
    //room-rubro
-    @ManyToMany(mappedBy = "idRoom",fetch = FetchType.EAGER)
-    private List<Rubro> rubros = new ArrayList<>();
 
     @OneToMany(mappedBy = "idRoom",fetch = FetchType.EAGER,orphanRemoval = true)
     private List<Incidence> incidences = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.MERGE)
+    @JoinTable(
+            name="category_room",
+            joinColumns = @JoinColumn(name="idRoom"),
+            inverseJoinColumns = @JoinColumn(name = "idCategory")
+    )
+    private RoomCategory idRoomCategory;
 
     public Long getIdRoom() {
         return idRoom;
@@ -89,13 +90,6 @@ public class Room {
         this.idUser = idUser;
     }
 
-    public List<Rubro> getRubros() {
-        return rubros;
-    }
-
-    public void setRubros(List<Rubro> rubros) {
-        this.rubros = rubros;
-    }
 
     public List<Incidence> getIncidences() {
         return incidences;
@@ -105,12 +99,5 @@ public class Room {
         this.incidences = incidences;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
 
 }

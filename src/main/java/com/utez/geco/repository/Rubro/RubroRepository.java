@@ -18,24 +18,12 @@ public interface RubroRepository extends JpaRepository<Rubro,Long> {
     @Query(value = "DELETE FROM room_rubro where idRubro = :idRubro",nativeQuery = true)
     int delete(@Param("idRubro") Long id);
 
-
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO category_rubro(id_rubro,id_category) values(:idRubro,:idCategory)",nativeQuery = true)
+    int assignRubroToCategory(@Param("idRubro")Long idRubro,@Param("idCategory")Long idCategory);
     @Query(value = "select id_rubro as idRubro, description,status from rubro where description like %:rubro%",nativeQuery = true)
     RubroGetDTO findByName(@Param("rubro")String rubro);
-
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM room_rubro where id_rubro = :idRubro AND id_room = :idRoom",nativeQuery = true)
-    int removeRubroFromRoom(@Param("idRoom") Long idRooom,@Param("idRubro")Long idRubro);
-
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM room_rubro where id_room = :idRoom",nativeQuery = true)
-    int removeRubrosFromRoom(@Param("idRoom") Long idRooom);
-
-    @Modifying
-    @Transactional
-    @Query(value = "INSERT INTO room_rubro(id_room,id_rubro) values(:idRoom,:idRubro)",nativeQuery = true)
-    int assignRubroToRoom(@Param("idRoom") Long idRooom,@Param("idRubro")Long idRubro);
 
     @Modifying
     @Transactional

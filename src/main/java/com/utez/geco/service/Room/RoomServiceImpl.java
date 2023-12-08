@@ -1,9 +1,7 @@
 package com.utez.geco.service.Room;
 
 import com.google.gson.Gson;
-import com.utez.geco.DTO.Room.RoomWithUserById;
-import com.utez.geco.DTO.Room.RoomsDTO;
-import com.utez.geco.DTO.Room.RoomsWithUser;
+import com.utez.geco.DTO.Room.*;
 import com.utez.geco.model.Room;
 import com.utez.geco.repository.Room.RoomRepository;
 import com.utez.geco.repository.User.UserRepository;
@@ -41,7 +39,15 @@ public class RoomServiceImpl extends Room {
         return roomRepository.findByCategory(category);
     }
 
-    public int register(Room room){return roomRepository.registerRoom(room.getIdentifier(),room.getDescription(),room.getCategory(),room.getStatus());}
+    public int registerCategory(RoomCategoryDTO category){return roomRepository.registerCategory(category.getName());}
+    public int updateCategory(RoomCategoryDTO category){return roomRepository.updateCategory(category.getName(),category.getIdCategory());}
+
+
+    public CategoryDTO findCategoryByName(String name){return roomRepository.findCategoryByName(name);}
+    public CategoryDTO findCategoryById(Long id){return roomRepository.findCategoryById(id);}
+    public List<CategoryDTO> findCategories(String name){return roomRepository.findCategories();}
+    public int assignCategoryToRoom(RoomCategoryDTO romCat){return roomRepository.assignCategoryToRoom(romCat.getIdCategory(),romCat.getIdRoom());}
+    public int register(Room room){return roomRepository.registerRoom(room.getIdentifier(),room.getDescription(),room.getStatus());}
     public Room update(Room room){return roomRepository.save(room);}
     public void delete(Long id){
         roomRepository.deleteById(id);

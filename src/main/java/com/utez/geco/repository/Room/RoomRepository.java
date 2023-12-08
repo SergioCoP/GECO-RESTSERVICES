@@ -1,9 +1,6 @@
 package com.utez.geco.repository.Room;
 
-import com.utez.geco.DTO.Room.RoomWithUserById;
-import com.utez.geco.DTO.Room.RoomsDTO;
-import com.utez.geco.DTO.Room.RoomsWithUser;
-import com.utez.geco.DTO.Room.UsersByRoom;
+import com.utez.geco.DTO.Room.*;
 import com.utez.geco.model.Room;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,8 +28,30 @@ public interface RoomRepository extends CrudRepository<Room,Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO room(identifier,description,category,status) values(:identifier,:description,:category,:status)",nativeQuery = true)
-    int registerRoom(@Param("identifier")String roomId,@Param("description")String roomDesc,@Param("category")String category,@Param("status")int status);
+    @Query(value = "INSERT INTO room(identifier,description,status) values(:identifier,:description,:status)",nativeQuery = true)
+    int registerRoom(@Param("identifier")String roomId,@Param("description")String roomDesc,@Param("status")int status);
+    @Query(value = "select id_category as idCategory,name from room_category ;",nativeQuery = true)
+    List<CategoryDTO> findCategories();
+
+    @Query(value = "select id_category as idCategory,name from room_category where name = :name",nativeQuery = true)
+    CategoryDTO findCategoryByName(@Param("name")String name);
+
+    @Query(value = "select id_category as idCategory,name from room_category where id_category = :idCategory",nativeQuery = true)
+    CategoryDTO findCategoryById(@Param("idCategory")Long idCategory);
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO room_category(name) values(:name)",nativeQuery = true)
+    int registerCategory(@Param("name")String name);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update room_category set name = :name where id_category = :idCategory",nativeQuery = true)
+    int updateCategory(@Param("name")String name,@Param("idCategory")Long idCategory);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO category_room(id_category,id_room) values(:idCategory,:idRoom)",nativeQuery = true)
+    int assignCategoryToRoom(@Param("idCategory")Long idCategory,@Param("idRoom")Long idRoom);
 
     @Query(value = "select r.id_room as idRoom,r.identifier as identifier ,u.id_user as idUser,CONCAT(p.name,' ',p.surname,' ',p.lastname) as userName\n" +
             "       from user u\n" +
@@ -75,8 +94,6 @@ public interface RoomRepository extends CrudRepository<Room,Long> {
     @Transactional
     @Query(value = "UPDATE room set status = :status where id_room = :idRoom",nativeQuery = true)
     int reviewRooom(@Param("status") int status,@Param("idRoom") Long idRoom);
-
-
 
     @Modifying
     @Transactional

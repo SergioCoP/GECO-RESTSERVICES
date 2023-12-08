@@ -1,9 +1,7 @@
 package com.utez.geco.controller;
 
 
-import com.utez.geco.DTO.Room.RoomWithUserById;
-import com.utez.geco.DTO.Room.RoomsDTO;
-import com.utez.geco.DTO.Room.RoomsWithUser;
+import com.utez.geco.DTO.Room.*;
 import com.utez.geco.model.Room;
 import com.utez.geco.service.Room.RoomServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,6 +177,62 @@ public class RoomController {
     public ResponseEntity<?> reviewRoom(@RequestParam("status") int status,@RequestParam("idRoom") Long idRoom){
         Map<String, Object> map = new HashMap<>();
         map.put("msg",roomService.reviewRoom(status,idRoom));
+        return new ResponseEntity<>(map,HttpStatus.OK);
+    }
+
+    @PostMapping("/category/saveCategory")
+    @ResponseBody
+    public ResponseEntity<?> saveCategory(@RequestBody RoomCategoryDTO category){
+        Map<String, Object> map = new HashMap<>();
+        if(!containsMaliciusWord(category.getName())){
+            if(roomService.registerCategory(category) >= 1){
+                map.put("msg","Registered");
+            }else{
+                map.put("msg","NotRegistered");
+            }
+        }else{
+            map.put("msg","BadWord");
+        }
+        return new ResponseEntity<>(map,HttpStatus.OK);
+    }
+
+    @PutMapping("/category/updateCategory")
+    @ResponseBody
+    public ResponseEntity<?> updateCategory(@RequestBody RoomCategoryDTO category){
+        Map<String, Object> map = new HashMap<>();
+        if(!containsMaliciusWord(category.getName())){
+            if(roomService.findCategoryById(category.getIdCategory()) != null){
+                if(roomService.updateCategory(category) >= 1){
+                    map.put("msg","Updated");
+                }else{
+                    map.put("msg","NotUpdated");
+                }
+            }else{
+                map.put("msg","NotFound");
+            }
+        }else{
+            map.put("msg","BadWord");
+        }
+        return new ResponseEntity<>(map,HttpStatus.OK);
+    }
+
+    @PostMapping("/category/assignCategoryToRoom")
+    @ResponseBody
+    public ResponseEntity<?> assignCategoryToRoom(@RequestBody RoomCategoryDTO roomCat){
+        Map<String, Object> map = new HashMap<>();
+        if(roomService.findCategoryById(roomCat.getIdCategory()) != null){
+            if(roomService.findById(roomCat.getIdRoom()) != null){
+                if(roomService.assignCategoryToRoom(roomCat) >= 1){
+                    map.put("msg","Assigned");
+                }else{
+                    map.put("msg","Assigned");
+                }
+            }else{
+                map.put("msg","RoomNotFound");
+            }
+        }else{
+            map.put("msg","CategoryNotFound");
+        }
         return new ResponseEntity<>(map,HttpStatus.OK);
     }
 
