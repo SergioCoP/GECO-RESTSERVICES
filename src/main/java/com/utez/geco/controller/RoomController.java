@@ -4,6 +4,7 @@ package com.utez.geco.controller;
 import com.utez.geco.DTO.Room.*;
 import com.utez.geco.model.Room;
 import com.utez.geco.service.Room.RoomServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,8 @@ public class RoomController {
 
     @Autowired
     private RoomServiceImpl roomService;
+    @Autowired
+    private HttpSession httpSession;
 
     @GetMapping("/getAllRooms")
     @ResponseBody

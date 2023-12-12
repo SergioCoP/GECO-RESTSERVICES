@@ -8,6 +8,7 @@ import com.utez.geco.DTO.User.UsersDTO;
 import com.utez.geco.model.Hotel;
 import com.utez.geco.service.Hotel.HotelServiceImpl;
 import com.utez.geco.service.User.UserServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,9 @@ public class HotelController {
     private HotelServiceImpl hotelService;
     @Autowired
     private UserServiceImpl userService;
+
+    @Autowired
+    private HttpSession httpSession;
     @GetMapping("/getAllHotels")
     @ResponseBody
     public ResponseEntity<?> getAllHotels(){

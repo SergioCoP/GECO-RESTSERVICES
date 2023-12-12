@@ -11,6 +11,7 @@ import com.utez.geco.model.User;
 import com.utez.geco.service.Room.RoomServiceImpl;
 import com.utez.geco.service.User.UserAuthenticationImpl;
 import com.utez.geco.service.User.UserServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,7 +50,9 @@ public class UserController {
     private RoomServiceImpl roomService;
     private final UserAuthenticationImpl authenticationService;
     private final PasswordEncoder passwordEncoder;
-
+    @Autowired
+    private HttpSession httpSession;
+    private User actUser = new User();
     @PostMapping("/registerUser")
     @ResponseBody
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest user){
@@ -107,7 +110,6 @@ public class UserController {
         if(!containsMaliciusWord(email)){
 
             UsersDTO nUser = userService.findByEmailLog(email);
-            System.out.println(nUser.getEmail());
                 if(nUser != null){
                     map.put("msg", "OK");
                     map.put("data",nUser);
@@ -159,11 +161,16 @@ public class UserController {
         if(!containsMaliciusWord(signinRequest.toString())){
                 Optional<User> nUser = userService.findByEmail(signinRequest.getEmail());
             if(nUser.isPresent()){
-                if(passwordEncoder.matches(signinRequest.getPassword(), nUser.get().getPassword())){
-                    map.put("msg","Loged");
-                    map.put("data",authenticationService.signin(signinRequest));
+                if(nUser.get().getStatus() == 1){
+                    if(passwordEncoder.matches(signinRequest.getPassword(), nUser.get().getPassword())){
+                        map.put("msg","Loged");
+                        map.put("data",authenticationService.signin(signinRequest));
+                        httpSession.setAttribute("user",map.get("data"));
+                    }else{
+                        map.put("msg","EmailPassFail");
+                    }
                 }else{
-                    map.put("msg","EmailPassFail");
+                    map.put("msg","UserInactive");
                 }
                 return new ResponseEntity<>(map, HttpStatus.OK);
             }else{
@@ -180,24 +187,26 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<?> addRolToUser(@RequestParam(name = "idUser")Long idUser,@RequestParam(name = "idRol") Long idRol){
         Map<String, Object> map = new HashMap<>();
-        if(userService.findRolById(idRol) != null){
-            if(userService.findById(idUser) != null){
-                if(userService.assignRolToUser(idUser,idRol) >= 1){
-                    map.put("msg","Assigned");
-                    return new ResponseEntity<>(map, HttpStatus.OK);
+       // actUser = (User) httpSession.getAttribute("user");
+//        if(actUser.getStatus() == 1){
+            if(userService.findRolById(idRol) != null){
+                if(userService.findById(idUser) != null){
+                    if(userService.assignRolToUser(idUser,idRol) >= 1){
+                        map.put("msg","Assigned");
+                    }else{
+                        map.put("msg","NotAssigned");
+                    }
                 }else{
-                    map.put("msg","NotAssigned");
-                    return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+                    map.put("msg","UserNotFound");
                 }
             }else{
-                map.put("msg","UserNotFound");
-                return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+                map.put("msg","RolNotFound");
             }
-        }else{
-            map.put("msg","RolNotFound");
-            return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
-        }
+//        }else{
+//            map.put("msg","UserInactive");
+//        }
 
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
 

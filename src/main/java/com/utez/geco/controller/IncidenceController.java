@@ -4,6 +4,7 @@ import com.utez.geco.DTO.Incidence.IncidenceUser;
 import com.utez.geco.model.Incidence;
 import com.utez.geco.service.Image.ImageService;
 import com.utez.geco.service.Incidence.IncidenceServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,8 @@ public class IncidenceController {
 
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private HttpSession httpSession;
 
     @GetMapping("/getAllIncidences")
     @ResponseBody

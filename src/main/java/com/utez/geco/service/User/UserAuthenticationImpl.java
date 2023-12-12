@@ -1,4 +1,6 @@
 package com.utez.geco.service.User;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.utez.geco.DTO.JwtAuthenticationResponse;
 import com.utez.geco.DTO.SigninRequest;
 import com.utez.geco.DTO.SignupRequest;
@@ -34,6 +36,8 @@ public class UserAuthenticationImpl implements AuthenticationService{
     }
 
     public JwtAuthenticationResponse signin(SigninRequest signinRequest){
+        JsonArray userData = new JsonArray();
+        JsonObject dat = new JsonObject();
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signinRequest.getEmail(),
                 signinRequest.getPassword()));
 
@@ -44,7 +48,7 @@ public class UserAuthenticationImpl implements AuthenticationService{
         JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
         jwtAuthenticationResponse.setToken(jwt);
         jwtAuthenticationResponse.setRefreshToken(refreshToken);
-
+        jwtAuthenticationResponse.setUser(user);
         return jwtAuthenticationResponse;
     }
 }

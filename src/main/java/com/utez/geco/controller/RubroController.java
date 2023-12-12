@@ -11,6 +11,7 @@ import com.utez.geco.DTO.Rubro.idRubro;
 import com.utez.geco.model.Rubro;
 import com.utez.geco.service.Room.RoomServiceImpl;
 import com.utez.geco.service.Rubro.RubroServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/rubro")
 @CrossOrigin(origins = "*")
+
 public class RubroController {
     String msg = "";
     String[] blacklist = {";", "@@",
@@ -43,6 +45,8 @@ public class RubroController {
     private RubroServiceImpl rubroService;
     @Autowired
     private RoomServiceImpl roomService;
+    @Autowired
+    private HttpSession httpSession;
 
     @GetMapping("/getAllRubros")
     @ResponseBody
