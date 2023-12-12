@@ -190,7 +190,7 @@ public class RubroController {
             }
         return new ResponseEntity<>(map,HttpStatus.OK);
     }
-    
+
     private boolean containsMaliciusWord(String texto) {
         for (String palabra : blacklist) {
             if (texto.toLowerCase().contains(palabra.toLowerCase())) {
