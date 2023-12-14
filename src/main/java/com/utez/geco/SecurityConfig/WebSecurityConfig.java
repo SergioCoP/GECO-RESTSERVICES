@@ -34,7 +34,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private final String[] PATHS = new String[]{"/api/user/login", "/api/user/hotel", "/api/image-upload/**"};
+    private final String[] PATHS = {"/api/user/login", "/api/user/hotel", "/api/image-upload/**"};
 
     private final JWTAuthorizationFilter jwtAuthorizationFilter;
     private final UserDetailsServiceImpl userService;
