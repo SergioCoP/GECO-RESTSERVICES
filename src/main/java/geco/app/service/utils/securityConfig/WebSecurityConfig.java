@@ -117,10 +117,10 @@ import java.util.Arrays;
 @EnableMethodSecurity
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableWebMvc
 public class WebSecurityConfig {
     private final UserDetailsService userDetailsService;
-    private final JWTAuthorizationFilter jwtAuthorizationFilter;
+    //private final JWTAuthorizationFilter jwtAuthorizationFilter;
+    private  final JWTAuthenticationFilter jwtAutheticationFilter;
     private final UserService userService;
     //Validar al usuario   *,
     private static final String AUTHENTICATE_USER = """
@@ -146,26 +146,43 @@ public class WebSecurityConfig {
                 .usersByUsernameQuery(AUTHENTICATE_USER)
                 .authoritiesByUsernameQuery(AUTHORIZATION_USER);
     }
-    @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-        JWTAuthenticationFilter jwtAuthenticationFilter = new JWTAuthenticationFilter();
-        jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
-        jwtAuthenticationFilter.setFilterProcessesUrl("/login");
+//    @Bean
+//    SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+//        JWTAuthenticationFilter jwtAuthenticationFilter = new JWTAuthenticationFilter();
+//        jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
+//        jwtAuthenticationFilter.setFilterProcessesUrl("/login");
+//
+//        return http.csrf(AbstractHttpConfigurer::disable)
+//                .cors(Customizer.withDefaults())
+//                .headers(hed->hed.addHeaderWriter(new StaticHeadersWriter("Access-Control-Allow-Origin", "*")))
+//                .authorizeRequests(
+//                        pub -> pub.requestMatchers(PATHS)
+//                                .permitAll().anyRequest().authenticated()
+//                )
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .addFilter(jwtAuthenticationFilter)
+//                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+//                .build();
+//    }
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    http
+            .cors(Customizer.withDefaults())
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(
+                    request -> request
+                            .requestMatchers(PATHS).permitAll()
+                            .anyRequest().authenticated()
+            )
+            .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authenticationProvider(authenticationProvider()).addFilterBefore(
+                    jwtAutheticationFilter, UsernamePasswordAuthenticationFilter.class
+            );
+    return http.build();
 
-        return http.csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
-                .headers(hed->hed.addHeaderWriter(new StaticHeadersWriter("Access-Control-Allow-Origin", "*")))
-                .authorizeRequests(
-                        pub -> pub.requestMatchers(PATHS)
-                                .permitAll().anyRequest().authenticated()
-                )
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .addFilter(jwtAuthenticationFilter)
-                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }
+}
 
     //    @Bean
 //    AuthenticationManager authenticationManager(HttpSecurity http) throws Exception{
