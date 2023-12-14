@@ -1,68 +1,93 @@
 package com.utez.geco.model;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "room")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "idRoom",
-        scope = Room.class
-)
 public class Room {
     @Id
-    @Column(name = "idRoom",nullable = false,unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idRoom;
+    @Column(name = "id_room", nullable = false, unique = true)
+    private long idRoom;
 
-    @Column(name = "identifier",length = 20)
-    private String identifier;
+    @Column(name = "room_number", nullable = false)
+    private long roomNumber;
 
+    @Column(name = "name", nullable = true)
+    private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "id_type_room")
+    private TypeRoom idTypeRoom;
 
-    @Column(name = "status",columnDefinition = "int default 1")
-    private int status = 1;
+    @ManyToOne
+    @JoinColumn(name = "first_id_user")
+    private User firstIdUser;
 
-    @Column(name = "description",length = 255)
-    private String description;
+    @ManyToOne
+    @JoinColumn(name = "second_id_user")
+    private User secondIdUser;
 
-    @Column(name = "category",length = 255)
-    private String category;
-    //rrrom-user
-    @ManyToMany()
-    @JoinTable(
-            name = "room_user",
-            joinColumns = @JoinColumn(name ="idRoom"),
-            inverseJoinColumns = @JoinColumn(name = "idUser")
-    )
-    @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
-    private List<User> idUser ;
-   //room-rubro
-    @ManyToMany(mappedBy = "idRoom",fetch = FetchType.EAGER)
-    private List<Rubro> rubros = new ArrayList<>();
+    @Column(name = "status", nullable = false)
+    private int status;
 
-    @OneToMany(mappedBy = "idRoom",fetch = FetchType.EAGER,orphanRemoval = true)
-    private List<Incidence> incidences = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "id_hotel")
+    private Hotel idHotel;
 
+    @OneToMany(mappedBy = "idRoom")
+    @JsonIgnore
+    private List<Incidence> incidences;
 
-    public Long getIdRoom() {
+    public long getIdRoom() {
         return idRoom;
     }
 
-    public void setIdRoom(Long idRoom) {
+    public void setIdRoom(long idRoom) {
         this.idRoom = idRoom;
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public long getRoomNumber() {
+        return roomNumber;
     }
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+    public void setRoomNumber(long roomNumber) {
+        this.roomNumber = roomNumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public TypeRoom getIdTypeRoom() {
+        return idTypeRoom;
+    }
+
+    public void setIdTypeRoom(TypeRoom idTypeRoom) {
+        this.idTypeRoom = idTypeRoom;
+    }
+
+    public User getFirstIdUser() {
+        return firstIdUser;
+    }
+
+    public void setFirstIdUser(User firstIdUser) {
+        this.firstIdUser = firstIdUser;
+    }
+
+    public User getSecondIdUser() {
+        return secondIdUser;
+    }
+
+    public void setSecondIdUser(User secondIdUser) {
+        this.secondIdUser = secondIdUser;
     }
 
     public int getStatus() {
@@ -73,28 +98,12 @@ public class Room {
         this.status = status;
     }
 
-    public String getDescription() {
-        return description;
+    public Hotel getIdHotel() {
+        return idHotel;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<User> getIdUser() {
-        return idUser;
-    }
-
-    public void setIdUser(List<User> idUser) {
-        this.idUser = idUser;
-    }
-
-    public List<Rubro> getRubros() {
-        return rubros;
-    }
-
-    public void setRubros(List<Rubro> rubros) {
-        this.rubros = rubros;
+    public void setIdHotel(Hotel idHotel) {
+        this.idHotel = idHotel;
     }
 
     public List<Incidence> getIncidences() {
@@ -105,12 +114,18 @@ public class Room {
         this.incidences = incidences;
     }
 
-    public String getCategory() {
-        return category;
+    @Override
+    public String toString() {
+        return "Room{" +
+                "idRoom=" + idRoom +
+                ", roomNumber=" + roomNumber +
+                ", name='" + name + '\'' +
+                ", idTypeRoom=" + idTypeRoom +
+                ", firstIdUser=" + firstIdUser +
+                ", secondIdUser=" + secondIdUser +
+                ", status=" + status +
+                ", idHotel=" + idHotel +
+                ", incidences=" + incidences +
+                '}';
     }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
 }

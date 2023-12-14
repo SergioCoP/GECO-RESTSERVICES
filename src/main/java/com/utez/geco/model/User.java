@@ -1,82 +1,61 @@
 package com.utez.geco.model;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
-@Data
 @Entity
 @Table(name = "user")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "idUser",
-        scope = User.class
-)
-public class User implements UserDetails {
+public class User {
     @Id
-    @Column(name = "idUser",nullable = false,unique = true)
+    @Column(name = "id_user", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idUser;
+    private long idUser;
 
-    @Column(name = "email",nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
-    @Column(name = "password",nullable = false,length = 255)
-    private String password;
-    @Column(name = "status",nullable = false,columnDefinition = "int default 1")
-    private int status = 1;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="idPerson")
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Column(name = "username", nullable = false)
+    private String username;
+
+    @Column(name = "turn", nullable = true)
+    private int turn;
+
+    @Column(name = "status", nullable = false)
+    private int status;
+
+    @OneToOne
+    @JoinColumn(name = "id_person", nullable = false)
     private Person idPerson;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_hotel",
-            joinColumns = @JoinColumn(name="idUser"),
-            inverseJoinColumns = @JoinColumn(name = "idHotel")
-    )
-    private List<Hotel> hotels;
+    @ManyToOne
+    @JoinColumn(name = "id_rol", nullable = false)
+    private Rol idRol;
 
+    @ManyToOne
+    @JoinColumn(name = "id_hotel", nullable = false)
+    private Hotel idHotel;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.MERGE)
-    @JoinTable(
-            name="user_rol",
-            joinColumns = @JoinColumn(name="idUser"),
-            inverseJoinColumns = @JoinColumn(name = "idRol")
-    )
-    private Role idRol = new Role();
+    @OneToMany(mappedBy = "idUser")
+    @JsonIgnore
+    private List<Incidence> incidences;
 
-    @ManyToMany(mappedBy = "idUser")
-    @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
-    private List<Room> rooms = new ArrayList<>();
+    @OneToMany(mappedBy = "firstIdUser")
+    @JsonIgnore
+    private List<Room> r1;
 
-    @OneToMany(mappedBy = "idUser",orphanRemoval = true)
-    private List<Incidence> incidences = new ArrayList<>();
+    @OneToMany(mappedBy = "secondIdUser")
+    @JsonIgnore
+    private List<Room> r2;
 
-
-    public User() {
-
-    }
-
-
-    public Long getIdUser() {
+    public long getIdUser() {
         return idUser;
     }
 
-    public void setIdUser(Long idUser) {
+    public void setIdUser(long idUser) {
         this.idUser = idUser;
     }
 
@@ -88,9 +67,28 @@ public class User implements UserDetails {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public int getTurn() {
+        return turn;
+    }
+
+    public void setTurn(int turn) {
+        this.turn = turn;
     }
 
     public int getStatus() {
@@ -109,28 +107,20 @@ public class User implements UserDetails {
         this.idPerson = idPerson;
     }
 
-    public List<Hotel> getHotels() {
-        return hotels;
-    }
-
-    public void setHotels(List<Hotel> hotels) {
-        this.hotels = hotels;
-    }
-
-    public Role getIdRol() {
+    public Rol getIdRol() {
         return idRol;
     }
 
-    public void setIdRol(Role idRol) {
+    public void setIdRol(Rol idRol) {
         this.idRol = idRol;
     }
 
-    public List<Room> getRooms() {
-        return rooms;
+    public Hotel getIdHotel() {
+        return idHotel;
     }
 
-    public void setRooms(List<Room> rooms) {
-        this.rooms = rooms;
+    public void setIdHotel(Hotel idHotel) {
+        this.idHotel = idHotel;
     }
 
     public List<Incidence> getIncidences() {
@@ -141,38 +131,37 @@ public class User implements UserDetails {
         this.incidences = incidences;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public List<Room> getR1() {
+        return r1;
+    }
 
-        return List.of(new SimpleGrantedAuthority(idRol.getName()));
+    public void setR1(List<Room> r1) {
+        this.r1 = r1;
+    }
+
+    public List<Room> getR2() {
+        return r2;
+    }
+
+    public void setR2(List<Room> r2) {
+        this.r2 = r2;
     }
 
     @Override
-    public String getUsername() {
-        return this.email;
+    public String toString() {
+        return "User{" +
+                "idUser=" + idUser +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", username='" + username + '\'' +
+                ", turn=" + turn +
+                ", status=" + status +
+                ", idPerson=" + idPerson +
+                ", idRol=" + idRol +
+                ", idHotel=" + idHotel +
+                ", incidences=" + incidences +
+                ", r1=" + r1 +
+                ", r2=" + r2 +
+                '}';
     }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-
-
-
 }

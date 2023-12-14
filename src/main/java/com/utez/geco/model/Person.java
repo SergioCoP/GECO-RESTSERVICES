@@ -1,45 +1,41 @@
 package com.utez.geco.model;
 
-
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "person")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "idPerson",
-        scope = Person.class
-)
 public class Person {
     @Id
-    @Column(name = "idPerson",nullable = false,unique = true)
+    @Column(name = "id_person", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPerson;
+    private long idPerson;
 
-    @Column(name = "name",nullable = false,length = 60)
+    @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "surname",nullable = false,length = 60)
-    private String surname;
-    @Column(name = "lastname",nullable = true,length = 60)
-    private String lastname;
-    @Column(name = "turn",nullable = true,length = 60)
-    private String turn;
 
+    @Column(name = "surname", nullable = false)
+    private String surname;
+
+    @Column(name = "lastname", nullable = true)
+    private String lastname;
 
     @OneToOne(mappedBy = "idPerson")
-    private User idUser;
-
-
+    @JsonIgnore
+    private User user;
 
     public Person() {
     }
 
-    public Long getIdPerson() {
+    public Person(long idPerson) {
+        this.idPerson = idPerson;
+    }
+
+    public long getIdPerson() {
         return idPerson;
     }
 
-    public void setIdPerson(Long idPerson) {
+    public void setIdPerson(long idPerson) {
         this.idPerson = idPerson;
     }
 
@@ -67,19 +63,22 @@ public class Person {
         this.lastname = lastname;
     }
 
-    public User getIdUser() {
-        return idUser;
+    public User getUser() {
+        return user;
     }
 
-    public void setIdUser(User idUser) {
-        this.idUser = idUser;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public String getTurn() {
-        return turn;
-    }
-
-    public void setTurn(String turn) {
-        this.turn = turn;
+    @Override
+    public String toString() {
+        return "Person{" +
+                "idPerson=" + idPerson +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", user=" + user +
+                '}';
     }
 }

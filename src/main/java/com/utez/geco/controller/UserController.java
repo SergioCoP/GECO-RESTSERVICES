@@ -1,249 +1,264 @@
 package com.utez.geco.controller;
 
-
-import com.google.gson.Gson;
-import com.utez.geco.DTO.SigninRequest;
-import com.utez.geco.DTO.SignupRequest;
-import com.utez.geco.DTO.User.AllUsersDTO;
-import com.utez.geco.DTO.User.UserById;
-import com.utez.geco.DTO.User.UsersDTO;
+import com.utez.geco.DTO.AuthCredentialsDTO;
+import com.utez.geco.DTO.UpdUsrDTO;
+import com.utez.geco.DTO.UsrChgPassDTO;
+import com.utez.geco.model.Hotel;
+import com.utez.geco.model.Person;
+import com.utez.geco.model.Rol;
 import com.utez.geco.model.User;
-import com.utez.geco.service.Room.RoomServiceImpl;
-import com.utez.geco.service.User.UserAuthenticationImpl;
-import com.utez.geco.service.User.UserServiceImpl;
-import lombok.RequiredArgsConstructor;
+import com.utez.geco.service.HotelService;
+import com.utez.geco.service.PersonService;
+import com.utez.geco.service.UserService;
+import com.utez.geco.utils.CustomService;
+import com.utez.geco.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/user")
-@CrossOrigin(origins = "*")
-@RequiredArgsConstructor
+@RequestMapping("/api/user")
+@CrossOrigin("*")
 public class UserController {
-
-    String[] blacklist = {";", "@@",
-            "SELECT", "select", "script>", "<script", "UPDATE",
-            "update", "DELETE", "delete", "input", "button",
-            "div", "html", "char", "varchar", "nvarchar", "hooks.js",
-            "int", "integer", "String", "sys", "sysobjects",
-            "sysobject",".js"};
-
-    String[] blacklist2 = {"@@", "SELECT", "select", "script>", "<script", "UPDATE",
-            "update", "DELETE", "delete", "input", "button",
-            "div", "html", "char", "varchar", "nvarchar", "hooks.js",
-            "int", "integer", "String", "sys", "sysobjects",
-            "sysobject",".js"};
-    String msg = "";
     @Autowired
-    private UserServiceImpl userService;
+    private UserService us;
     @Autowired
-    private RoomServiceImpl roomService;
-    private final UserAuthenticationImpl authenticationService;
-    private final PasswordEncoder passwordEncoder;
+    private PersonService ps;
+    @Autowired
+    private HotelService hs;
+    private final CustomService cs = new CustomService();
+    private HashMap<String, Object> response;
 
-    @PostMapping("/registerUser")
-    @ResponseBody
-    public ResponseEntity<?> registerUser(@RequestBody SignupRequest user){
-        Map<String, Object> map = new HashMap<>();
-        if(!containsMaliciusWord(user.toString())){
-            if(userService.findByEmail(user.getEmail()).isEmpty()){
-                System.out.println(user.getIdRol().getIdRol());
-                User nUser = authenticationService.signup(user);
-                if(nUser != null){
-                    System.out.println(nUser.getIdRol().getName());
-                    map.put("msg","Register");
-                    map.put("data",nUser);
-                    return new ResponseEntity<>(map, HttpStatus.CREATED);
-                }else{
-                    map.put("msg", "NotExist");
-                    return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+    @GetMapping("")
+    public ResponseEntity<?> findAll() {
+        response = new HashMap<>();
+        List<User> userList = us.findAll();
+
+        if(userList.isEmpty()) {
+            response.put("status", HttpStatus.OK);
+            response.put("message", "Aún no hay registros");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        response.put("status", HttpStatus.OK);
+        response.put("message", "Operación exitosa");
+        response.put("data", userList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable(name = "id") long id) {
+        response = new HashMap<>();
+        User found = us.findById(id);
+
+        if(found == null) {
+            response.put("status", HttpStatus.NOT_FOUND);
+            response.put("message", "No se encontró el registro");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        response.put("status", HttpStatus.OK);
+        response.put("message", "Se encontró el registro");
+        response.put("data", found);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/hotel/{id}")
+    public ResponseEntity<?> findByHotel(@PathVariable("id") long idHotel) {
+        response = new HashMap<>();
+        List<User> userList = null;
+        if(hs.findById(idHotel) != null) {
+            userList = us.findByHotel(idHotel);
+            if(userList.isEmpty()) {
+                response.put("status", HttpStatus.OK);
+                response.put("message", "Aún no hay registros");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+        } else {
+            response.put("status", HttpStatus.NOT_FOUND);
+            response.put("message", "No se encontró el hotel");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        response.put("status", HttpStatus.OK);
+        response.put("message", "Operación exitosa");
+        response.put("data", userList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("")
+    public ResponseEntity<?> save(@RequestBody User user) {
+        response = new HashMap<>();
+        if(hs.findById(user.getIdHotel().getIdHotel()) != null) {
+            Person userPerson = user.getIdPerson();
+            if(!cs.checkBlacklists(userPerson.toString())) {
+                if(!ps.save(userPerson)) {
+                    response.put("status", HttpStatus.BAD_REQUEST);
+                    response.put("message", "No se pudo registrar a la persona");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
-            }else{
-                map.put("msg", "ExistEmail");
-                return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
             }
-        }else{
-            map.put("msg","BadWord");
-            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
-        }
-    }
+            long idPerson = ps.findLastId();
 
-    @PostMapping("/registerUserWithoutRol")
-    @ResponseBody
-    public ResponseEntity<?> registerUserWithoutRol(@RequestBody User user){
-        Map<String, Object> map = new HashMap<>();
-        if(!containsMaliciusWord(user.toString())){
-            if(userService.findByEmail(user.getEmail()).isEmpty()){
-                if(userService.registerWithoutRol(user) >= 1){
-                    map.put("msg","Register");
-                    return new ResponseEntity<>(map, HttpStatus.CREATED);
-                }else{
-                    map.put("msg", "NotExist");
-                    return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+            user.setStatus(1);
+            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+            user.setIdPerson(new Person(idPerson));
+            if(!cs.checkBlacklists(user.toString())) {
+                if(us.save(user)) {
+                    long idUser = us.findLastId();
+                    response.put("status", HttpStatus.CREATED);
+                    response.put("idPerson", idUser);
+                    response.put("message", "Se creó el registro");
+                    return new ResponseEntity<>(response, HttpStatus.CREATED);
                 }
-            }else{
-                map.put("msg", "ExistEmail");
-                return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
             }
-        }else{
-            map.put("msg","BadWord");
-            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+        } else {
+            response.put("status", HttpStatus.NOT_FOUND);
+            response.put("message", "No se encontró el hotel");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
+
+        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("message", "No se creó el registro");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/getUserByEmail")
-    @ResponseBody
-    public ResponseEntity<?> findUserByEmail(@RequestParam(name = "email") String email) {
-        Map<String, Object> map = new HashMap<>();
-        if(!containsMaliciusWord(email)){
+    @PostMapping("/hotel")
+    public ResponseEntity<?> saveWithHotel(@RequestBody User user) {
+        response = new HashMap<>();
+        Person userPerson = user.getIdPerson();
+        if(!cs.checkBlacklists(userPerson.toString())) {
+            if(!ps.save(userPerson)) {
+                response.put("status", HttpStatus.BAD_REQUEST);
+                response.put("message", "No se pudo registrar a la persona");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+        }
+        long idPerson = ps.findLastId();
 
-            UsersDTO nUser = userService.findByEmailLog(email);
-            System.out.println(nUser.getEmail());
-                if(nUser != null){
-                    map.put("msg", "OK");
-                    map.put("data",nUser);
-                    return new ResponseEntity<>(map, HttpStatus.OK);
-                }else{
-                    map.put("msg", "FAIL");
-                    return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+        Hotel userHotel = user.getIdHotel();
+        if(!cs.checkBlacklists(userHotel.toString())) {
+            if(!hs.save(userHotel)) {
+                response.put("status", HttpStatus.BAD_REQUEST);
+                response.put("message", "No se pudo registrar a el hotel");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+        }
+        long idHotel = hs.findLastId();
+
+        user.setStatus(1);
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.setIdPerson(new Person(idPerson));
+        user.setIdRol(new Rol(1));
+        user.setIdHotel(new Hotel(idHotel));
+        if(!cs.checkBlacklists(user.toString())) {
+            if(us.save(user)) {
+                long idUser = us.findLastId();
+                response.put("status", HttpStatus.CREATED);
+                response.put("message", "Se creó el registro");
+                response.put("idUser", idUser);
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
+            }
+        }
+
+        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("message", "No se creó el registro");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/login")
+    public  ResponseEntity<?> login(@RequestBody AuthCredentialsDTO auth) {
+        response = new HashMap<>();
+        if(!cs.checkBlacklists(auth.toString())) {
+            System.out.println(auth.getUser() + " " + auth.getPassword());
+            User found = us.login(auth.getUser(), auth.getPassword());
+            if(found != null) {
+                String token = TokenUtils.createToken(auth.getUser(), auth.getUser());
+                response.put("status", HttpStatus.OK);
+                response.put("message", "Inicio de sesión exitoso");
+                response.put("user", found);
+                response.put("token", token);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+
+            response.put("status", HttpStatus.NOT_FOUND);
+            response.put("message", "Credenciales invalidas");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("message", "Inicio de sesión fallido");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @PutMapping("")
+    public ResponseEntity<?> update(@RequestBody UpdUsrDTO updUsrDTO) {
+        response = new HashMap<>();
+        if(!cs.checkBlacklists(updUsrDTO.toString())) {
+            if(us.findById(updUsrDTO.getIdUser()) != null) {
+                if(us.updateEmailUsernameRol(updUsrDTO)) {
+                    response.put("status", HttpStatus.OK);
+                    response.put("message", "Se modificó el registro");
+                    return new ResponseEntity<>(response, HttpStatus.OK);
                 }
-        }else{
-            map.put("msg","BadWord");
-            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+            } else {
+                response.put("status", HttpStatus.NOT_FOUND);
+                response.put("message", "No se encontró el registro");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
         }
 
+        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("message", "No se modificó el registro");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/getUserById")
-    @ResponseBody
-    public ResponseEntity<?> findUserById(@RequestParam(name = "idUser") Long id) {
-        Map<String, Object> map = new HashMap<>();
-        UserById nUser = userService.findById(id);
-        if(nUser != null){
-            map.put("msg","OK");
-            map.put("data",nUser);
-            return new ResponseEntity<>(map, HttpStatus.OK);
-        }else{
-            map.put("msg", "NotExist");
-            return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @GetMapping("/getUsersByRol")
-    @ResponseBody
-    public ResponseEntity<?> findUsersByRol(@RequestParam(name = "rolName") String rolName) {
-        Map<String, Object> map = new HashMap<>();
-        if(!containsMaliciusWord(rolName)){
-            map.put("msg","OK");
-            map.put("data",userService.findUsersByRol(rolName));
-            return new ResponseEntity<>(map, HttpStatus.OK);
-        }else{
-            map.put("msg","BadWord");
-            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping ("/login")
-    @ResponseBody
-    public ResponseEntity<?> findByEmailAndPassword(@RequestBody SigninRequest signinRequest){
-        Map<String, Object> map = new HashMap<>();
-        if(!containsMaliciusWord(signinRequest.toString())){
-                Optional<User> nUser = userService.findByEmail(signinRequest.getEmail());
-            if(nUser.isPresent()){
-                if(passwordEncoder.matches(signinRequest.getPassword(), nUser.get().getPassword())){
-                    map.put("msg","Loged");
-                    map.put("data",authenticationService.signin(signinRequest));
-                }else{
-                    map.put("msg","EmailPassFail");
+    @PutMapping("/newpass")
+    public ResponseEntity<?> changePassword(@RequestBody UsrChgPassDTO userDTO) {
+        response = new HashMap<>();
+        if(!cs.checkBlacklists(userDTO.toString())) {
+            if(us.findById(userDTO.getIdUser()) != null) {
+                userDTO.setCurrent(us.findById(userDTO.getIdUser()).getPassword());
+                if(us.changePassword(userDTO)) {
+                    response.put("status", HttpStatus.OK);
+                    response.put("message", "Se modificó la contraseña");
+                    return new ResponseEntity<>(response, HttpStatus.OK);
                 }
-                return new ResponseEntity<>(map, HttpStatus.OK);
-            }else{
-                map.put("msg","NotExist");
-                return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+            } else {
+                response.put("status", HttpStatus.NOT_FOUND);
+                response.put("message", "No se encontró el registro");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-        }else{
-            map.put("msg","BadWord");
-            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
+
+        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("message", "No se modificó el registro");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping ("/addRolToUser")
-    @ResponseBody
-    public ResponseEntity<?> addRolToUser(@RequestParam(name = "idUser")Long idUser,@RequestParam(name = "idRol") Long idRol){
-        Map<String, Object> map = new HashMap<>();
-        if(userService.findRolById(idRol) != null){
-            if(userService.findById(idUser) != null){
-                if(userService.assignRolToUser(idUser,idRol) >= 1){
-                    map.put("msg","Assigned");
-                    return new ResponseEntity<>(map, HttpStatus.OK);
-                }else{
-                    map.put("msg","NotAssigned");
-                    return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
-                }
-            }else{
-                map.put("msg","UserNotFound");
-                return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+    @PutMapping("/status/{id}")
+    private ResponseEntity<?> changeStatus(@PathVariable("id") long id) {
+        response = new HashMap<>();
+        User found = us.findById(id);
+        if(found != null) {
+            if(us.changeStatus(found, id)) {
+                response.put("status", HttpStatus.OK);
+                response.put("message", "Se cambió el estado del usuario");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
-        }else{
-            map.put("msg","RolNotFound");
-            return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+        } else {
+            response.put("status", HttpStatus.NOT_FOUND);
+            response.put("message", "No se encontró el registro");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-    }
-
-
-    @GetMapping("/getUsers")
-    @ResponseBody
-    public ResponseEntity<?> getAllUsers(){
-        Map<String, Object> map = new HashMap<>();
-        List<AllUsersDTO> users = userService.findAllUsers();
-        map.put("msg","OK");
-        map.put("data",users);
-        return new ResponseEntity<>(map,HttpStatus.OK);
-    }
-
-    @PutMapping("/changueState")
-    @ResponseBody
-    public ResponseEntity<?> deactivateUser(@RequestParam("status")int status,@RequestParam("idUser")Long idUser){
-        Map<String, Object> map = new HashMap<>();
-        if(userService.findById(idUser) != null){
-            if(status == 0){
-                if(userService.changueState(idUser,status) >= 1){
-                    map.put("msg",roomService.deleteRoomUserDown(idUser));
-                    return new ResponseEntity<>(map,HttpStatus.OK);
-                }else{
-                    map.put("msg","NotUpdate");
-                }
-                return new ResponseEntity<>(map,HttpStatus.OK);
-            }else{
-
-            }
-        }else{
-            map.put("msg","UserNotFound");
-        }
-        return new ResponseEntity<>(map,HttpStatus.OK);
-    }
-
-    private boolean containsMaliciusWord(String texto) {
-        for (String palabra : blacklist) {
-            if (texto.toLowerCase().contains(palabra.toLowerCase())) {
-                return true;
-            }
-        }
-        for (String palabra : blacklist2) {
-            if (texto.toLowerCase().contains(palabra.toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
+        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("message", "No se modificó el registro");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

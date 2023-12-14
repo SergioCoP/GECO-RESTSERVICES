@@ -1,7 +1,7 @@
 package com.utez.geco.SecurityConfig;
 
 
-import com.utez.geco.service.User.UserServiceImpl;
+import com.utez.geco.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +36,7 @@ public class WebSecurityConfig {
     };
 
     private final JwtAuthenticationFilter jwtAutheticationFilter;
-    private final UserServiceImpl userService;
+    private final UserDetailsServiceImpl userService;
 
     //Validar al usuario   *,
     private static final String AUTHENTICATE_USER = """
@@ -83,7 +83,7 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userService.userDetailsService());
+        authenticationProvider.setUserDetailsService(userService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }

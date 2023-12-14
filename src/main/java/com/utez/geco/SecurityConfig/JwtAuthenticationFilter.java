@@ -1,9 +1,10 @@
 package com.utez.geco.SecurityConfig;
 
 import com.utez.geco.model.User;
-import com.utez.geco.repository.User.UserRepository;
+import com.utez.geco.repository.UserRepository;
 import com.utez.geco.service.Jwt.JwtTokenService;
-import com.utez.geco.service.User.UserServiceImpl;
+import com.utez.geco.service.UserDetailsImpl;
+import com.utez.geco.service.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenService jwtService;
 
-    private final UserServiceImpl userService;
+    private final UserDetailsServiceImpl userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -45,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         userEmail = jwtService.extractUsername(jwt);
 
         if(!StringUtils.isEmpty(userEmail) && SecurityContextHolder.getContext().getAuthentication() == null){
-            UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userEmail);
+            UserDetails userDetails = userService.loadUserByUsername(userEmail);
 
             if(jwtService.isTokenValid(jwt,userDetails)){
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();

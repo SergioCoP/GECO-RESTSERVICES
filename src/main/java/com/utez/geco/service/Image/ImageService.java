@@ -20,7 +20,7 @@ public class ImageService {
     private String uploadFile(File file, String fileName) throws IOException {
         BlobId blobId = BlobId.of("geco-f04b1.appspot.com", fileName); // Replace with your bucker name
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
-        InputStream inputStream = ImageService.class.getClassLoader().getResourceAsStream("firebase-private-key.json"); // change the file name with your one
+        InputStream inputStream = ImageService.class.getClassLoader().getResourceAsStream("geco-firebase.json"); // change the file name with your one
         Credentials credentials = GoogleCredentials.fromStream(inputStream);
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));

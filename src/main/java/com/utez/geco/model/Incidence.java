@@ -1,71 +1,44 @@
 package com.utez.geco.model;
 
-import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
-
-import java.util.Date;
 
 @Entity
 @Table(name = "incidence")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "idIncidence",
-        scope = Incidence.class
-)
 public class Incidence {
     @Id
-    @Column(name = "idInicidence",nullable = false,unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idIncidence;
-    @Column(name = "createdAt")
-    private Date createdAt;
-    @Column(name = "description")
-    private String description;
-    @Column(name = "image")
+    @Column(name = "id_incidence", nullable = false, unique = true)
+    private long idIncidence;
+
+    @Column(name = "image", nullable = false)
     private String image;
-    @Column(name = "status")
+
+    @Column(name = "discovered_on", nullable = false)
+    private String discoveredOn;
+
+    @Column(name = "resolved_on", nullable = true)
+    private String resolvedOn;
+
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Column(name = "status", nullable = false)
     private int status;
 
-    //iduser
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_incidence",
-    joinColumns = @JoinColumn(name = "idIncidence"),
-    inverseJoinColumns = @JoinColumn(name = "idUser"))
+    @ManyToOne
+    @JoinColumn(name = "id_iuser")
     private User idUser;
-    //idRoom
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="idRoom")
-    @JoinTable(name = "room_incidence",
-    joinColumns = @JoinColumn(name = "idIncidence"),
-    inverseJoinColumns = @JoinColumn(name ="idRoom")
-    )
+
+    @ManyToOne
+    @JoinColumn(name = "id_room")
     private Room idRoom;
 
-    public Incidence() {
-    }
-
-    public Long getIdIncidence() {
+    public long getIdIncidence() {
         return idIncidence;
     }
 
-    public void setIdIncidence(Long idIncidence) {
+    public void setIdIncidence(long idIncidence) {
         this.idIncidence = idIncidence;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getImage() {
@@ -74,6 +47,30 @@ public class Incidence {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getDiscoveredOn() {
+        return discoveredOn;
+    }
+
+    public void setDiscoveredOn(String discoveredOn) {
+        this.discoveredOn = discoveredOn;
+    }
+
+    public String getResolvedOn() {
+        return resolvedOn;
+    }
+
+    public void setResolvedOn(String resolvedOn) {
+        this.resolvedOn = resolvedOn;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public int getStatus() {
@@ -100,5 +97,17 @@ public class Incidence {
         this.idRoom = idRoom;
     }
 
-
+    @Override
+    public String toString() {
+        return "Incidence{" +
+                "idIncidence=" + idIncidence +
+                ", image='" + image + '\'' +
+                ", discoveredOn='" + discoveredOn + '\'' +
+                ", resolvedOn='" + resolvedOn + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                ", idUser=" + idUser +
+                ", idRoom=" + idRoom +
+                '}';
+    }
 }

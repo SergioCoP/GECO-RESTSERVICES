@@ -1,31 +1,30 @@
 package com.utez.geco.controller;
 
-import com.utez.geco.model.Hotel;
-import com.utez.geco.service.HotelService;
+import com.utez.geco.model.Person;
+import com.utez.geco.service.PersonService;
 import com.utez.geco.utils.CustomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/hotel")
 @CrossOrigin(origins = "*")
-public class HotelController {
+@RequestMapping(value = "/api/person")
+@RestController
+public class PersonController {
     @Autowired
-    private HotelService hs;
+    private PersonService ps;
     private CustomService cs = new CustomService();
     private HashMap<String, Object> response;
 
     @GetMapping("")
     public ResponseEntity<?> findAll() {
         response = new HashMap<>();
-        List<Hotel> hotelList = hs.findAll();
+        List<Person> personList = ps.findAll();
 
-        if(hotelList.isEmpty()) {
+        if(personList.isEmpty()) {
             response.put("status", HttpStatus.OK);
             response.put("message", "Aún no hay registros");
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -33,14 +32,14 @@ public class HotelController {
 
         response.put("status", HttpStatus.OK);
         response.put("message", "Operación exitosa");
-        response.put("data", hotelList);
+        response.put("data", personList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable(name = "id") long id) {
         response = new HashMap<>();
-        Hotel found = hs.findById(id);
+        Person found = ps.findById(id);
 
         if(found == null) {
             response.put("status", HttpStatus.NOT_FOUND);
@@ -55,13 +54,13 @@ public class HotelController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> save(@RequestBody Hotel hotel) {
+    public ResponseEntity<?> save(@RequestBody Person person) {
         response = new HashMap<>();
-        if(!cs.checkBlacklists(hotel.toString())) {
-            if(hs.save(hotel)) {
-                long idHotel = hs.findLastId();
+        if(!cs.checkBlacklists(person.toString())) {
+            if(ps.save(person)) {
+                long idPerson = ps.findLastId();
                 response.put("status", HttpStatus.CREATED);
-                response.put("idPerson", idHotel);
+                response.put("idPerson", idPerson);
                 response.put("message", "Se creó el registro");
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             }
@@ -73,24 +72,24 @@ public class HotelController {
     }
 
     @PutMapping("")
-    public ResponseEntity<?> update(@RequestBody Hotel hotel) {
+    public ResponseEntity<?> update(@RequestBody Person person) {
         response = new HashMap<>();
-        if(hs.findById(hotel.getIdHotel()) != null) {
-            if(!cs.checkBlacklists(hotel.toString())) {
-                if(hs.save(hotel)) {
+        if(!cs.checkBlacklists(person.toString())) {
+            if(ps.findById(person.getIdPerson()) != null) {
+                if(ps.update(person)) {
                     response.put("status", HttpStatus.OK);
                     response.put("message", "Se modificó el registro");
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 }
+            } else {
+                response.put("status", HttpStatus.NOT_FOUND);
+                response.put("message", "No se encontró el registro");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-        } else {
-            response.put("status", HttpStatus.NOT_FOUND);
-            response.put("message", "No se encontró el registro");
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
         response.put("status", HttpStatus.BAD_REQUEST);
-        response.put("message", "No se creó el registro");
+        response.put("message", "No se modificó el registro");
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

@@ -1,11 +1,13 @@
 package com.utez.geco.controller;
 
-
-import com.utez.geco.DTO.Room.RoomWithUserById;
-import com.utez.geco.DTO.Room.RoomsDTO;
-import com.utez.geco.DTO.Room.RoomsWithUser;
+import com.utez.geco.DTO.RmChgSttsDTO;
 import com.utez.geco.model.Room;
-import com.utez.geco.service.Room.RoomServiceImpl;
+import com.utez.geco.model.User;
+import com.utez.geco.service.HotelService;
+import com.utez.geco.service.RoomService;
+import com.utez.geco.service.TypeRoomService;
+import com.utez.geco.service.UserService;
+import com.utez.geco.utils.CustomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,186 +15,157 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/room")
+@RequestMapping("/api/room")
 @CrossOrigin(origins = "*")
 public class RoomController {
-    String msg = "";
-
-    String[] blacklist = {";", "@@",
-            "SELECT", "select", "script>", "<script", "UPDATE",
-            "update", "DELETE", "delete", "input", "button",
-            "div", "html", "char", "varchar", "nvarchar", "hooks.js",
-            "int", "integer", "String", "sys", "sysobjects",
-            "sysobject",".js"};
-
-    String[] blacklist2 = {"@@", "SELECT", "select", "script>", "<script", "UPDATE",
-            "update", "DELETE", "delete", "input", "button",
-            "div", "html", "char", "varchar", "nvarchar", "hooks.js",
-            "int", "integer", "String", "sys", "sysobjects",
-            "sysobject",".js"};
-
     @Autowired
-    private RoomServiceImpl roomService;
+    private RoomService rs;
+    @Autowired
+    private UserService us;
+    @Autowired
+    private HotelService hs;
+    @Autowired
+    private TypeRoomService trs;
+    private final CustomService cs = new CustomService();
+    private HashMap<String, Object> response;
 
-    @GetMapping("/getAllRooms")
-    @ResponseBody
-    public ResponseEntity<?> getAllRooms(){
-        Map<String, Object> map = new HashMap<>();
-        map.put("msg","OK");
-        map.put("data",roomService.findAll());
-        return new ResponseEntity<>(map, HttpStatus.OK);
-    }
+    @GetMapping("")
+    public ResponseEntity<?> findAll() {
+        response = new HashMap<>();
+        List<Room> roomList = rs.findAll();
 
-    @GetMapping("/getRoom")
-    @ResponseBody
-    public ResponseEntity<?> getRoomById(@RequestParam("idRoom") Long id){
-        Map<String, Object> map = new HashMap<>();
-        RoomWithUserById room = roomService.findById(id);
-        if(room != null){
-            map.put("msg","OK");
-            map.put("data",room);
-            return new ResponseEntity<>(map,HttpStatus.OK);
-        }else{
-            map.put("msg","NotFound");
-            return new ResponseEntity<>(map,HttpStatus.NOT_FOUND);
+        if(roomList.isEmpty()) {
+            response.put("status", HttpStatus.OK);
+            response.put("message", "Aún no hay registros");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
+        response.put("status", HttpStatus.OK);
+        response.put("message", "Operación exitosa");
+        response.put("data", roomList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/getRoomsWithUser")
-    @ResponseBody
-    public ResponseEntity<?> getRoomsWithUser(){
-        //new Gson().toJson(roomRepository.validateRomUser(idUser,idRoom))
-        List<RoomsWithUser> roUser = roomService.getRoomsWithUser();
-        Map<String, Object> map = new HashMap<>();
-        if(roUser.size() >=1){
-            map.put("msg","OK");
-            map.put("data",roUser);
-        }else{
-            map.put("msg","UsersNotAssigned");
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable(name = "id") long id) {
+        response = new HashMap<>();
+        Room found = rs.findById(id);
+
+        if(found == null) {
+            response.put("status", HttpStatus.NOT_FOUND);
+            response.put("message", "No se encontró el registro");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(map,HttpStatus.OK);
+
+        response.put("status", HttpStatus.OK);
+        response.put("message", "Se encontró el registro");
+        response.put("data", found);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/getRoomWithUserById")
-    @ResponseBody
-    public ResponseEntity<?> getRoomWithUserById(@RequestParam("idRoom")Long idRoom){
-        Map<String, Object> map = new HashMap<>();
-        RoomWithUserById roUser = roomService.getRoomWithUserById(idRoom);
-        if(roUser != null){
-            map.put("msg","OK");
-            map.put("data",roUser);
-        }else{
-            map.put("msg","UserNotAssigned");
-        }
-        return new ResponseEntity<>(map,HttpStatus.OK);
-    }
-
-    @PostMapping("/saveRoom")
-    @ResponseBody
-    public ResponseEntity<?> createRoom(@RequestBody Room nrom,
-            @RequestParam("nameInit")String nameInit,
-            @RequestParam("numInit")int numInit,
-            @RequestParam("numHab")int numHabitaciones) {
-        int nrrooms =0;
-        Map<String, Object> map = new HashMap<>();
-        if(!containsMaliciusWord(nrom.toString())){
-            for (int i = 0; i < numHabitaciones; i++) {
-                nrom.setIdentifier(nameInit + (numInit+i));
-                nrom.setDescription(nrom.getDescription());
-                if(roomService.register(nrom) >=1){
-                    nrrooms+=1;
-                }
+    @GetMapping("/hotel/{id}")
+    public ResponseEntity<?> findByHotel(@PathVariable(name = "id") long id) {
+        response = new HashMap<>();
+        List<Room> roomList = null;
+        if(hs.findById(id) != null) {
+            roomList = rs.findByHotel(id);
+            if(roomList.isEmpty()) {
+                response.put("status", HttpStatus.OK);
+                response.put("message", "Aún no hay registros");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
-            if( nrrooms == numHabitaciones){
-                map.put("msg","Register");
-                return new ResponseEntity<>(map,HttpStatus.OK);
-            }else{
-                map.put("msg","NotRegister");
-                return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
-            }
-        }else{
-            map.put("msg","BadWord");
-            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+        } else {
+            response.put("status", HttpStatus.NOT_FOUND);
+            response.put("message", "No se ecnontró el hotel");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
+
+        response.put("status", HttpStatus.OK);
+        response.put("message", "Operación exitosa");
+        response.put("data", roomList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/updateRoom")
-    @ResponseBody
-    public ResponseEntity<?> updateRoom(@RequestBody Room uRoom){
-        Map<String, Object> map = new HashMap<>();
-        if(!containsMaliciusWord(uRoom.toString())){
-            if(roomService.findById(uRoom.getIdRoom()) != null){
-                Room room =roomService.update(uRoom);
-                if(room != null){
-                    map.put("msg","Update");
-                    return new ResponseEntity<>(map,HttpStatus.OK);
-                }else{
-                    map.put("msg","NotUpdate");
-                    return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
-                }
-            }else{
-                map.put("msg","NotExist");
-                return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
-            }
-        }else{
-            map.put("msg","BadWord");
-            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+    @PostMapping("")
+    public ResponseEntity<?> save(@RequestBody Room room) {
+        response = new HashMap<>();
+        if(rs.findAll().isEmpty()) {
+            room.setRoomNumber(1);
+        } else {
+            room.setRoomNumber(rs.findByHotel(room.getIdHotel().getIdHotel()).size() + 1);
         }
-    }
+        room.setStatus(1);
 
-    @DeleteMapping("/deleteRoom")
-    @ResponseBody
-    public ResponseEntity<?> deleteRoom(@RequestParam("idRoom") Long id){
-        Map<String, Object> map = new HashMap<>();
-        if(roomService.findById(id)!= null){
-            roomService.delete(id);
-            map.put("msg","Delete");
-            return new ResponseEntity<>(map,HttpStatus.OK);
-        }else{
-            map.put("msg","NotDelete");
-            return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/assignUserRoom")
-    @ResponseBody
-    public ResponseEntity<?> assignUserToRoom(@RequestParam("idUser") Long idUser,@RequestParam("idRoom") Long idRoom){
-        Map<String, Object> map = new HashMap<>();
-        map.put("msg",roomService.assignUserToRoom(idUser,idRoom));
-        return new ResponseEntity<>(map,HttpStatus.OK);
-    }
-
-    @PostMapping("/unsignUserRoom")
-    @ResponseBody
-    public ResponseEntity<?> unsignUserToRoom(@RequestParam("idUser") Long idUser,@RequestParam("idRoom") Long idRoom){
-        Map<String, Object> map = new HashMap<>();
-        map.put("msg",roomService.unsignUserToRoom(idUser,idRoom));
-        return new ResponseEntity<>(map,HttpStatus.OK);
-    }
-
-    @PutMapping("/reviewRoom")
-    @ResponseBody
-    public ResponseEntity<?> reviewRoom(@RequestParam("status") int status,@RequestParam("idRoom") Long idRoom){
-        Map<String, Object> map = new HashMap<>();
-        map.put("msg",roomService.reviewRoom(status,idRoom));
-        return new ResponseEntity<>(map,HttpStatus.OK);
-    }
-
-    private boolean containsMaliciusWord(String texto) {
-        for (String palabra : blacklist) {
-            if (texto.toLowerCase().contains(palabra.toLowerCase())) {
-                return true;
+        if(!cs.checkBlacklists(room.toString())) {
+            if(rs.save(room)) {
+                long idRoom = rs.returnLastId();
+                response.put("status", HttpStatus.CREATED);
+                response.put("idRoom", idRoom);
+                response.put("message", "Se creó el registro");
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
             }
         }
-        for (String palabra : blacklist2) {
-            if (texto.toLowerCase().contains(palabra.toLowerCase())) {
-                return true;
+
+        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("message", "No se creó el registro");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @PutMapping("")
+    public ResponseEntity<?> update(@RequestBody Room room) {
+        response = new HashMap<>();
+        boolean u1 = false, u2 = false, tr = false, htl = false, rm = false;
+
+        //Checa que existan los usuarios
+        if(room.getFirstIdUser() != null) {
+            u1 = us.findById(room.getFirstIdUser().getIdUser()) == null;
+        }
+
+        if(room.getSecondIdUser() != null) {
+            u2 = us.findById(room.getSecondIdUser().getIdUser()) == null;
+        }
+
+        //Checa que exista el hotel y el tipo de cuarto
+        tr = trs.findById(room.getIdTypeRoom().getIdTypeRoom()) == null;
+        htl = hs.findById(room.getIdHotel().getIdHotel()) == null;
+        rm = rs.findById(room.getIdRoom()) == null;
+
+        if(rm || u1 || u2 || tr || htl) {
+            response.put("status", HttpStatus.NOT_FOUND);
+            response.put("message", "No se encontró " + (rm ? "el cuarto" : u1 || u2 ? "a uno de los usuarios" : tr ? "el tipo de cuarto" : "el hotel"));
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        } else {
+            if(rs.update(room)) {
+                response.put("status", HttpStatus.OK);
+                response.put("message", "Se actualizó el registro");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.put("status", HttpStatus.BAD_REQUEST);
+                response.put("message", "No se actualizó el registro");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
         }
-        return false;
+    }
+
+    @PutMapping("/status/{id}")
+    public ResponseEntity<?> changeStatus(@PathVariable("id") long id, @RequestBody RmChgSttsDTO status) {
+        response = new HashMap<>();
+        if(rs.findById(id) == null) {
+            response.put("status", HttpStatus.NOT_FOUND);
+            response.put("message", "No se encontró el cuarto");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        if(rs.changeStatus(status.getStatus(), id)) {
+            response.put("status", HttpStatus.OK);
+            response.put("message", "Se actualizó el estatus del cuarto");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("message", "No se actualizó el registro");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

@@ -1,13 +1,13 @@
 package com.utez.geco.DTO;
 
 import com.utez.geco.model.Person;
-import com.utez.geco.model.Role;
+import com.utez.geco.model.Rol;
 
 public class SignupRequest {
     private String email;
     private String password;
     private Person idPerson;
-    private Role idRol;
+    private Rol idRol;
 
     public String getEmail() {
         return email;
@@ -33,11 +33,11 @@ public class SignupRequest {
         this.idPerson = idPerson;
     }
 
-    public Role getIdRol() {
+    public Rol getIdRol() {
         return idRol;
     }
 
-    public void setIdRol(Role idRol) {
+    public void setIdRol(Rol idRol) {
         this.idRol = idRol;
     }
 }
