@@ -120,7 +120,6 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://52.1.80.209:3000/")
 public class WebSecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JWTAuthorizationFilter jwtAuthorizationFilter;
@@ -152,6 +151,21 @@ public class WebSecurityConfig {
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder())
                 .and().build();
+    }
+
+    @Bean
+    public WebMvcConfigurer corsMappingConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("*")
+                        .allowedMethods("*")
+                        .maxAge(3600)
+                        .allowedHeaders("Requestor-Type")
+                        .exposedHeaders("X-Get-Header");
+            }
+        };
     }
 
     @Bean
