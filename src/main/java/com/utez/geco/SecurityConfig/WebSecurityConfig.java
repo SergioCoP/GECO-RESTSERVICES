@@ -31,9 +31,7 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    String[] paths = new String[]{
-            "/user/login","/user/registerUser"
-    };
+    private final String[] PATHS = new String[]{"/api/user/login", "/api/user/hotel", "/api/image-upload/hotel","/api/image-upload"};
 
     private final JwtAuthenticationFilter jwtAutheticationFilter;
     private final UserDetailsServiceImpl userService;
@@ -69,7 +67,7 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers(paths).permitAll()
+                                .requestMatchers(PATHS).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
