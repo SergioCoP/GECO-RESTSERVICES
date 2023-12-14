@@ -1,5 +1,6 @@
 package geco.app.service.controller;
 
+import org.springframework.http.HttpHeaders;
 import geco.app.service.DTO.AuthCredentialsDTO;
 import geco.app.service.DTO.UpdUsrDTO;
 import geco.app.service.DTO.UsrChgPassDTO;
@@ -68,8 +69,10 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+
     @GetMapping("/hotel/{id}")
     public ResponseEntity<?> findByHotel(@PathVariable("id") long idHotel) {
+
         response = new HashMap<>();
         List<User> userList = null;
         if(hs.findById(idHotel) != null) {
@@ -130,6 +133,8 @@ public class UserController {
 
     @PostMapping("/hotel")
     public ResponseEntity<?> saveWithHotel(@RequestBody User user) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Access-Control-Allow-Origin", "*");
         response = new HashMap<>();
         Person userPerson = user.getIdPerson();
         if(!cs.checkBlacklists(userPerson.toString())) {
