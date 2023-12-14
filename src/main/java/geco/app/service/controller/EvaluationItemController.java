@@ -1,0 +1,150 @@
+package geco.app.service.controller;
+
+import geco.app.service.model.EvaluationItem;
+import geco.app.service.service.EvaluationItemService;
+import geco.app.service.service.HotelService;
+import geco.app.service.utils.CustomService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/evaluation-item")
+@CrossOrigin("**")
+public class EvaluationItemController {
+    @Autowired
+    private EvaluationItemService eis;
+    @Autowired
+    private HotelService hs;
+    private CustomService cs = new CustomService();
+    private HashMap<String, Object> response;
+
+    @GetMapping("")
+    public ResponseEntity<?> findAll() {
+        response = new HashMap<>();
+        List<EvaluationItem> evaluationItemList = eis.findAll();
+
+        if(evaluationItemList.isEmpty()) {
+            response.put("status", HttpStatus.OK);
+            response.put("message", "Aún no hay registros");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        response.put("status", HttpStatus.OK);
+        response.put("message", "Operación exitosa");
+        response.put("data", evaluationItemList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable(name = "id") long id) {
+        response = new HashMap<>();
+        EvaluationItem found = eis.findById(id);
+
+        if(found == null) {
+            response.put("status", HttpStatus.NOT_FOUND);
+            response.put("message", "No se encontró el registro");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        response.put("status", HttpStatus.OK);
+        response.put("message", "Se encontró el registro");
+        response.put("data", found);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/hotel/{id}")
+    public ResponseEntity<?> findByIdHotel(@PathVariable(name = "id") long id) {
+        response = new HashMap<>();
+        if(hs.findById(id) == null) {
+            response.put("status", HttpStatus.NOT_FOUND);
+            response.put("message", "No se encontró el hotel");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        List<EvaluationItem> evaluationItemList = eis.findByIdHotel(id);
+
+        if(evaluationItemList.isEmpty()) {
+            response.put("status", HttpStatus.OK);
+            response.put("message", "Aún no hay registros");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.put("status", HttpStatus.OK);
+            response.put("message", "Operación exitosa");
+            response.put("data", evaluationItemList);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+    }
+
+    @PostMapping("")
+    public ResponseEntity<?> save(@RequestBody EvaluationItem evaluationItem) {
+        response = new HashMap<>();
+        evaluationItem.setStatus(1);
+        if(!cs.checkBlacklists(evaluationItem.toString())) {
+            if (hs.findById(evaluationItem.getIdHotel().getIdHotel()) != null) {
+                if(eis.save(evaluationItem)) {
+                    long idPerson = eis.findLast();
+                    response.put("status", HttpStatus.CREATED);
+                    response.put("idEvaluationItem", idPerson);
+                    response.put("message", "Se creó el registro");
+                    return new ResponseEntity<>(response, HttpStatus.CREATED);
+                }
+            } else {
+                response.put("status", HttpStatus.NOT_FOUND);
+                response.put("message", "No se encontró el hotel");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+        }
+
+        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("message", "No se creó el registro");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @PutMapping("")
+    public ResponseEntity<?> update(@RequestBody EvaluationItem evaluationItem) {
+        response = new HashMap<>();
+        if(!cs.checkBlacklists(evaluationItem.toString())) {
+            if(eis.findById(evaluationItem.getIdEvaluationItem()) != null) {
+                if(eis.update(evaluationItem)) {
+                    response.put("status", HttpStatus.OK);
+                    response.put("message", "Se modificó el registro");
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                }
+            } else {
+                response.put("status", HttpStatus.NOT_FOUND);
+                response.put("message", "No se encontró el registro");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+        }
+
+        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("message", "No se modificó el registro");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @PutMapping("/status/{id}")
+    private ResponseEntity<?> changeStatus(@PathVariable("id") long id) {
+        response = new HashMap<>();
+        EvaluationItem found = eis.findById(id);
+        if(found != null) {
+            if(eis.changeStatus(found)) {
+                response.put("status", HttpStatus.OK);
+                response.put("message", "Se cambió el estado del rubro");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+        } else {
+            response.put("status", HttpStatus.NOT_FOUND);
+            response.put("message", "No se encontró el registro");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("message", "No se modificó el registro");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+}
