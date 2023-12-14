@@ -13,7 +13,6 @@ import java.util.List;
 
 @CrossOrigin
 @RequestMapping(value = "/api/person")
-@RestController
 public class PersonController {
     @Autowired
     private PersonService ps;
