@@ -120,7 +120,6 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@CrossOrigin
 public class WebSecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JWTAuthorizationFilter jwtAuthorizationFilter;
@@ -161,6 +160,7 @@ public class WebSecurityConfig {
                 .authorizeRequests(
                         pub -> pub.requestMatchers(PATHS)
                                 .permitAll().anyRequest().authenticated()
+
                 )
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -230,7 +230,7 @@ public class WebSecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*").allowedMethods("*");
+                registry.addMapping("/**").allowedOrigins("*").allowedMethods("*").allowedHeaders("*");
             }
         };
     }
