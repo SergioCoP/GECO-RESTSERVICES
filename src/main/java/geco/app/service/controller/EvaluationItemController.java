@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/evaluation-item")
-@CrossOrigin("**")
+@CrossOrigin("*")
 public class EvaluationItemController {
     @Autowired
     private EvaluationItemService eis;
