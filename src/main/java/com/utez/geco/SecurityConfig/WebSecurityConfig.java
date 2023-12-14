@@ -33,7 +33,7 @@ public class WebSecurityConfig {
 
     private final String[] PATHS = new String[]{"/api/user/login", "/api/user/hotel", "/api/image-upload/hotel","/api/image-upload"};
 
-    private final JwtAuthenticationFilter jwtAutheticationFilter;
+    private final JWTAuthorizationFilter jwtAuthorizationFilter;
     private final UserDetailsServiceImpl userService;
 
     //Validar al usuario   *,
@@ -61,7 +61,10 @@ public class WebSecurityConfig {
                 .authoritiesByUsernameQuery(AUTHORIZATION_USER);
     }
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http,AuthenticationManager authenticationManager) throws Exception{
+        JWTAuthenticationFilter jwtAuthenticationFilter = new JWTAuthenticationFilter();
+        jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
+        jwtAuthenticationFilter.setFilterProcessesUrl("/login");
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
@@ -72,8 +75,8 @@ public class WebSecurityConfig {
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
-                        jwtAutheticationFilter, UsernamePasswordAuthenticationFilter.class
-                );
+                        jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class
+                ).addFilter(jwtAuthenticationFilter);
         return http.build();
 
     }
