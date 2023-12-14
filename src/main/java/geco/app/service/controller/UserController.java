@@ -141,7 +141,7 @@ public class UserController {
             if(!ps.save(userPerson)) {
                 response.put("status", HttpStatus.BAD_REQUEST);
                 response.put("message", "No se pudo registrar a la persona");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(response,headers, HttpStatus.BAD_REQUEST);
             }
         }
         long idPerson = ps.findLastId();
