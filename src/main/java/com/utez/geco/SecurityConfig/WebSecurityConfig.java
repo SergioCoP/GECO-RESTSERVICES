@@ -73,10 +73,12 @@ public class WebSecurityConfig {
                                 .requestMatchers(PATHS).permitAll()
                                 .anyRequest().authenticated()
                 )
+                .httpBasic(Customizer.withDefaults())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider()).addFilterBefore(
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(
                         jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class
-                ).addFilter(jwtAuthenticationFilter);
+                );
         return http.build();
 
     }

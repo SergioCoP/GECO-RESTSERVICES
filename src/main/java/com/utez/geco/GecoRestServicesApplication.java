@@ -43,7 +43,7 @@ public class GecoRestServicesApplication implements CommandLineRunner {
 				"    INSERT INTO user(email, password, id_person) VALUES (Uemail, Upassword, idPerson); " +
 				"END";
 
-		jdbcTemplate.execute(sql);
+//		jdbcTemplate.execute(sql);
 	}
 //public static void main(String[] args) {
 //	String secretKey = generateSecretKey();
