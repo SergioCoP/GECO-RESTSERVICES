@@ -83,8 +83,8 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         HttpMethod.POST.name(),
                         HttpMethod.OPTIONS.name())
                 .allowCredentials(true)
-                .allowedHeaders(HttpHeaders.CONTENT_TYPE,HttpHeaders.AUTHORIZATION)
-                .exposedHeaders(HttpHeaders.AUTHORIZATION,HttpHeaders.CONTENT_TYPE);
+                .allowedHeaders("*")
+                .exposedHeaders("*");
     }
 
 }
