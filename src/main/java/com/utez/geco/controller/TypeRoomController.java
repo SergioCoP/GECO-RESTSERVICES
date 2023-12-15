@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/type-room")
+@CrossOrigin(origins = "*")
 public class TypeRoomController {
     @Autowired
     private TypeRoomService trs;

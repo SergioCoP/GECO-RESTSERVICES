@@ -13,6 +13,7 @@ import java.util.List;
 
 @RequestMapping(value = "/api/person")
 @RestController
+@CrossOrigin(origins = "*")
 public class PersonController {
     @Autowired
     private PersonService ps;
