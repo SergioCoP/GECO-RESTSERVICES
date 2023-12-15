@@ -17,7 +17,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/incidence")
-@CrossOrigin("*")
 public class IncidenceController {
     @Autowired
     private IncidenceService is;
