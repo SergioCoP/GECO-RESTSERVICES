@@ -74,6 +74,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         HttpMethod.POST.name(),
                         HttpMethod.OPTIONS.name())
                 .allowedHeaders(HttpHeaders.CONTENT_TYPE,HttpHeaders.AUTHORIZATION)
-                .exposedHeaders(HttpHeaders.AUTHORIZATION);;
+                .exposedHeaders(HttpHeaders.AUTHORIZATION,HttpHeaders.CONTENT_TYPE);
     }
 }
