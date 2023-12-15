@@ -9,6 +9,7 @@ import com.utez.geco.service.TypeRoomService;
 import com.utez.geco.service.UserService;
 import com.utez.geco.utils.CustomService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 
-@CrossOrigin(origins = "http://52.1.80.209:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.POST})
+@CrossOrigin(origins = "http://52.1.80.209:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.POST},allowedHeaders = {HttpHeaders.CONTENT_TYPE,HttpHeaders.AUTHORIZATION})
 @RestController
 @RequestMapping("/api/room")
 public class RoomController {

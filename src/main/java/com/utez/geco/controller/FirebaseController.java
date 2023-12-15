@@ -2,6 +2,7 @@ package com.utez.geco.controller;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.util.HashMap;
 
-@CrossOrigin(origins = "http://52.1.80.209:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.POST})
+@CrossOrigin(origins = "http://52.1.80.209:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.POST},allowedHeaders = {HttpHeaders.CONTENT_TYPE,HttpHeaders.AUTHORIZATION})
 @RestController
 @RequestMapping("/api/image-upload")
 public class FirebaseController {
