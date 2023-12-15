@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 
-
+@CrossOrigin(origins = "http://52.1.80.209:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.POST})
 @RequestMapping(value = "/api/person")
 @RestController
 public class PersonController {
