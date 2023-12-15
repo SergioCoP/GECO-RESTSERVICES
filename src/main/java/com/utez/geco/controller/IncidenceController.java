@@ -120,7 +120,7 @@ public class IncidenceController {
                 svIncDTO.getIdRoom()
         );
 
-        System.out.println(incidence.getIdUser().getIdUser());
+        System.out.println("Usuario en incidencia -," + incidence.getIdUser());
         usr = us.findById(incidence.getIdUser().getIdUser()) == null;
         rm = rs.findById(incidence.getIdRoom().getIdRoom()) == null;
 
