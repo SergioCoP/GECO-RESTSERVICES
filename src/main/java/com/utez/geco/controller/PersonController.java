@@ -17,7 +17,7 @@ import java.util.List;
         allowedHeaders = {HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION},
         exposedHeaders = {HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION}
 )
-@RequestMapping(value = "/api/person")
+@RequestMapping(value = "/api/person",method = RequestMethod.OPTIONS)
 @RestController
 public class PersonController {
     @Autowired

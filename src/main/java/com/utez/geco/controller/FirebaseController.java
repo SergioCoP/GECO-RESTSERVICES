@@ -18,7 +18,7 @@ import java.util.HashMap;
         exposedHeaders = {HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION}
 )
 @RestController
-@RequestMapping("/api/image-upload")
+@RequestMapping(value = "/api/image-upload",method = RequestMethod.OPTIONS)
 public class FirebaseController {
     private final String FIREBASE_FILE = "geco-firebase.json";
     private HashMap<String, Object> response;

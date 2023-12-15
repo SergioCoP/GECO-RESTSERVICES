@@ -20,7 +20,7 @@ import java.util.List;
         exposedHeaders = {HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION}
 )
 @RestController
-@RequestMapping("/api/type-room")
+@RequestMapping(value = "/api/type-room",method = RequestMethod.OPTIONS)
 public class TypeRoomController {
     @Autowired
     private TypeRoomService trs;

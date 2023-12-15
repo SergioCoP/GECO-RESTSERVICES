@@ -19,7 +19,7 @@ import java.util.List;
         exposedHeaders = {HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION}
 )
 @RestController
-@RequestMapping("/api/hotel")
+@RequestMapping(value = "/api/hotel",method = RequestMethod.OPTIONS)
 public class HotelController {
     @Autowired
     private HotelService hs;

@@ -24,7 +24,7 @@ import java.util.List;
         exposedHeaders = {HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION}
 )
 @RestController
-@RequestMapping("/api/room")
+@RequestMapping(value = "/api/room",method = RequestMethod.OPTIONS)
 public class RoomController {
     @Autowired
     private RoomService rs;

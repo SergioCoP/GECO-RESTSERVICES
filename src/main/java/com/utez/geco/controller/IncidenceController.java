@@ -22,7 +22,7 @@ import java.util.List;
         exposedHeaders = {HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION}
 )
 @RestController
-@RequestMapping("/api/incidence")
+@RequestMapping(value = "/api/incidence",method = RequestMethod.OPTIONS)
 public class IncidenceController {
     @Autowired
     private IncidenceService is;

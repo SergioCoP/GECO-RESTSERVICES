@@ -29,7 +29,7 @@ import java.util.List;
         exposedHeaders = {HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION}
 )
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping(value = "/api/user",method = RequestMethod.OPTIONS)
 public class UserController {
     @Autowired
     private UserService us;

@@ -20,7 +20,7 @@ import java.util.List;
         exposedHeaders = {HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION}
 )
 @RestController
-@RequestMapping("/api/evaluation-item")
+@RequestMapping(value = "/api/evaluation-item",method = RequestMethod.OPTIONS)
 public class EvaluationItemController {
     @Autowired
     private EvaluationItemService eis;
