@@ -1,5 +1,6 @@
 package com.utez.geco.controller;
 
+import com.utez.geco.DTO.SvIncDTO;
 import com.utez.geco.model.Incidence;
 import com.utez.geco.service.IncidenceService;
 import com.utez.geco.service.RoomService;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -102,13 +104,19 @@ public class IncidenceController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> save(@RequestBody Incidence incidence) {
+    public ResponseEntity<?> save(@RequestBody SvIncDTO svIncDTO) {
         response = new HashMap<>();
-        Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        String dis = sdf.format(date);
-        incidence.setDiscoveredOn(dis);
         boolean usr = false, rm = false;
+
+        Incidence incidence = new Incidence(
+                Base64.getDecoder().decode(svIncDTO.getImage().replace("data:image/png;base64,", "")),
+                sdf.format(new Date()),
+                svIncDTO.getDescription(),
+                0,
+                svIncDTO.getIdUser(),
+                svIncDTO.getIdRoom()
+        );
 
         usr = us.findById(incidence.getIdUser().getIdUser()) == null;
         rm = rs.findById(incidence.getIdRoom().getIdRoom()) == null;
@@ -119,17 +127,15 @@ public class IncidenceController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-        if(!cs.checkBlacklists(incidence.toString())) {
-            if(is.save(incidence)) {
-                response.put("status", HttpStatus.OK);
-                response.put("message", "Se creó el registro");
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            }
+        if(is.save(incidence)) {
+            response.put("status", HttpStatus.OK);
+            response.put("message", "Se creó el registro");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.put("status", HttpStatus.BAD_REQUEST);
+            response.put("message", "No se creó el registro");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-
-        response.put("status", HttpStatus.BAD_REQUEST);
-        response.put("message", "No se creó el registro");
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/status/{id}")

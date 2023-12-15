@@ -19,6 +19,6 @@ public interface IncidenceRepository extends JpaRepository<Incidence, Long> {
     @Query(value = "SELECT i.* FROM incidence i JOIN room r ON r.id_room = i.id_room WHERE r.id_hotel = :idHotel", nativeQuery = true)
     List<Incidence> findByIdHotel(@Param("idHotel") long id);
     @Modifying
-    @Query(value = "UPDATE incidence SET status = 0, resolved_on = :solved WHERE id_incidence = :id", nativeQuery = true)
+    @Query(value = "UPDATE incidence SET status = 1, resolved_on = :solved WHERE id_incidence = :id", nativeQuery = true)
     int changeStatus(@Param("solved") String solved, @Param("id") long id);
 }

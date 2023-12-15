@@ -10,8 +10,8 @@ public class Incidence {
     @Column(name = "id_incidence", nullable = false, unique = true)
     private long idIncidence;
 
-    @Column(name = "image", nullable = false)
-    private String image;
+    @Column(name = "image", nullable = false, columnDefinition = "LONGBLOB")
+    private byte[] image;
 
     @Column(name = "discovered_on", nullable = false)
     private String discoveredOn;
@@ -33,6 +33,12 @@ public class Incidence {
     @JoinColumn(name = "id_room")
     private Room idRoom;
 
+    public Incidence() {
+    }
+
+    public Incidence(byte[] decode, String format, String description, int i, User idUser, Room idRoom) {
+    }
+
     public long getIdIncidence() {
         return idIncidence;
     }
@@ -41,11 +47,11 @@ public class Incidence {
         this.idIncidence = idIncidence;
     }
 
-    public String getImage() {
+    public byte[] getImage() {
         return image;
     }
 
-    public void setImage(String image) {
+    public void setImage(byte[] image) {
         this.image = image;
     }
 
