@@ -106,6 +106,7 @@ public class IncidenceController {
     @PostMapping("")
     public ResponseEntity<?> save(@RequestBody SvIncDTO svIncDTO) {
         System.out.println(svIncDTO.toString());
+        System.out.println(svIncDTO.getIdUser().getIdUser());
         response = new HashMap<>();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         boolean usr = false, rm = false;
