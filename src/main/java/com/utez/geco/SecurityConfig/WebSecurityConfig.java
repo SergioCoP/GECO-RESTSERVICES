@@ -75,16 +75,16 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-                .allowedOrigins("http://52.1.80.209:3000")
-                .allowedMethods(HttpMethod.GET.name(),
-                        HttpMethod.DELETE.name(),
-                        HttpMethod.PUT.name(),
-                        HttpMethod.POST.name(),
-                        HttpMethod.OPTIONS.name())
-                .allowCredentials(true)
-                .allowedHeaders(HttpHeaders.CONTENT_TYPE,HttpHeaders.AUTHORIZATION);
-    }
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/api/**")
+//                .allowedOrigins("http://52.1.80.209:3000")
+//                .allowedMethods(HttpMethod.GET.name(),
+//                        HttpMethod.DELETE.name(),
+//                        HttpMethod.PUT.name(),
+//                        HttpMethod.POST.name(),
+//                        HttpMethod.OPTIONS.name())
+//                .allowCredentials(true)
+//                .allowedHeaders(HttpHeaders.CONTENT_TYPE,HttpHeaders.AUTHORIZATION);
+//    }
 }
