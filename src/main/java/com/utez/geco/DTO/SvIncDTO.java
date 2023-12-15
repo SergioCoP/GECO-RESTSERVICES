@@ -40,4 +40,14 @@ public class SvIncDTO {
     public void setIdRoom(Room idRoom) {
         this.idRoom = idRoom;
     }
+
+    @Override
+    public String toString() {
+        return "SvIncDTO{" +
+                "image='" + image + '\'' +
+                ", description='" + description + '\'' +
+                ", idUser=" + idUser +
+                ", idRoom=" + idRoom +
+                '}';
+    }
 }
