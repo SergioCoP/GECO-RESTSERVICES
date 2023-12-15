@@ -36,7 +36,9 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 
     private final UserDetailsService userDetailsService;
     private final JWTAuthorizationFilter jwtAuthorizationFilter;
-    private final String[] PATHS = new String[]{"/api/**"};
+    private final String[] PATHS = new String[]{"/api/user/**","/api/type-room/**",
+            "/api/room/**","/api/person/**",
+            "/api/incidence","/api/hotel/**","/api/image-upload/**","/api/evaluation-item/**"};
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
@@ -73,6 +75,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
+                .allowedOrigins("http://52.1.80.209:3000")
                 .allowedOriginPatterns("http://52.1.80.209:3000")
                 .allowedMethods(HttpMethod.GET.name(),
                         HttpMethod.DELETE.name(),
