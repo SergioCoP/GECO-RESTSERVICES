@@ -36,7 +36,13 @@ public class Incidence {
     public Incidence() {
     }
 
-    public Incidence(byte[] decode, String format, String description, int i, User idUser, Room idRoom) {
+    public Incidence(byte[] image, String discoveredOn, String description, int status, User idUser, Room idRoom) {
+        this.image = image;
+        this.discoveredOn = discoveredOn;
+        this.description = description;
+        this.status = status;
+        this.idUser = idUser;
+        this.idRoom = idRoom;
     }
 
     public long getIdIncidence() {
