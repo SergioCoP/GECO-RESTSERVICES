@@ -1,6 +1,11 @@
 package com.utez.geco.SecurityConfig;
 
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.io.IOException;
 
 
 @Configuration
@@ -67,7 +73,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                .allowedOrigins("http://52.1.80.209:3000")
+                .allowedOriginPatterns("http://52.1.80.209:3000")
                 .allowedMethods(HttpMethod.GET.name(),
                         HttpMethod.DELETE.name(),
                         HttpMethod.PUT.name(),
@@ -76,4 +82,5 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .allowedHeaders(HttpHeaders.CONTENT_TYPE,HttpHeaders.AUTHORIZATION)
                 .exposedHeaders(HttpHeaders.AUTHORIZATION,HttpHeaders.CONTENT_TYPE);
     }
+
 }
