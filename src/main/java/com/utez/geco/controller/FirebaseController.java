@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/image-upload")
-@CrossOrigin(origins = {"*","http://52.1.80.209:3000/"},methods = {RequestMethod.GET,RequestMethod.DELETE,RequestMethod.POST,RequestMethod.PUT})
+//@CrossOrigin(origins = {"*","http://52.1.80.209:3000/",""},methods = {RequestMethod.GET,RequestMethod.DELETE,RequestMethod.POST,RequestMethod.PUT})
 public class FirebaseController {
     private final String FIREBASE_FILE = "geco-firebase.json";
     private HashMap<String, Object> response;
